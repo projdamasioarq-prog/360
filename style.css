@@ -1169,3 +1169,69 @@ body.view-control-buttons .viewControlButton {
     padding: 28px 22px;
   }
 }
+
+/* Etiquetas arquitetônicas ancoradas ao panorama 360° */
+.wall-label-hotspot {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: max-content;
+  max-width: 240px;
+  font-family: Arial, sans-serif;
+}
+
+.wall-label-button {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 10px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  background: rgba(20, 20, 20, 0.82);
+  color: #fff;
+  cursor: pointer;
+  white-space: nowrap;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+}
+
+.wall-label-button:hover {
+  background: rgba(255, 255, 255, 0.95);
+  color: #171717;
+}
+
+.wall-label-marker {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #d4c3a3;
+  color: #171717;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.wall-label-title {
+  font-size: 12px;
+  font-weight: bold;
+  letter-spacing: 1.5px;
+}
+
+.wall-label-description {
+  width: 200px;
+  margin-top: 6px;
+  padding: 12px;
+  box-sizing: border-box;
+  white-space: normal;
+  overflow-wrap: break-word;
+  background: rgba(20, 20, 20, 0.93);
+  color: #fff;
+  font-size: 12px;
+  line-height: 1.6;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+}
+
+.wall-label-description[hidden] {
+  display: none;
+}
+
