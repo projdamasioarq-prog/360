@@ -7,6 +7,110 @@
 <style> @-ms-viewport { width: device-width; } </style>
 <link rel="stylesheet" href="vendor/reset.min.css">
 <link rel="stylesheet" href="style.css">
+
+<style>
+/* CARROSSEL DO PORTFÓLIO */
+.portfolio-carousel {
+  margin-top: 22px;
+  color: #f4f1eb;
+}
+.portfolio-stage {
+  position: relative;
+  background: #111614;
+  border: 1px solid rgba(220, 230, 220, .18);
+  border-radius: 14px;
+  overflow: hidden;
+}
+.portfolio-main-image {
+  display: block;
+  width: 100%;
+  height: clamp(220px, 42vh, 440px);
+  object-fit: contain;
+  background: #0b0d0c;
+}
+.portfolio-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 2;
+  width: 42px;
+  height: 42px;
+  border: 1px solid rgba(255,255,255,.35);
+  border-radius: 50%;
+  background: rgba(15, 22, 18, .82);
+  color: #fff;
+  font-size: 24px;
+  cursor: pointer;
+}
+.portfolio-arrow:hover { background: #315743; }
+.portfolio-prev { left: 12px; }
+.portfolio-next { right: 12px; }
+.portfolio-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  margin: 15px 0 12px;
+}
+.portfolio-meta h3 {
+  margin: 0 0 6px;
+  color: #fff;
+  font-size: 19px;
+  font-weight: 600;
+}
+.portfolio-meta p {
+  margin: 0;
+  color: rgba(255,255,255,.72);
+  line-height: 1.55;
+  font-size: 14px;
+}
+.portfolio-counter {
+  flex: 0 0 auto;
+  color: #b9cbbd;
+  font-size: 12px;
+  letter-spacing: .08em;
+  padding-top: 4px;
+}
+.portfolio-thumbnails {
+  display: flex;
+  gap: 9px;
+  overflow-x: auto;
+  padding: 3px 1px 10px;
+}
+.portfolio-thumb {
+  flex: 0 0 82px;
+  height: 58px;
+  padding: 0;
+  border: 2px solid transparent;
+  border-radius: 6px;
+  background: #171b18;
+  overflow: hidden;
+  cursor: pointer;
+  opacity: .68;
+}
+.portfolio-thumb img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.portfolio-thumb.is-active {
+  border-color: #9ab7a2;
+  opacity: 1;
+}
+.portfolio-hint {
+  margin-top: 8px;
+  font-size: 12px;
+  color: rgba(255,255,255,.52);
+}
+@media (max-width: 600px) {
+  .portfolio-main-image { height: 34vh; min-height: 200px; }
+  .portfolio-arrow { width: 36px; height: 36px; }
+  .portfolio-thumb { flex-basis: 70px; height: 50px; }
+  .portfolio-meta h3 { font-size: 17px; }
+}
+</style>
+
 </head>
 <body class="single-scene ">
 
@@ -153,10 +257,34 @@
       eyebrow: 'PORTFÓLIO',
       title: 'Nossos projetos',
       html: `
-        <p>Explore nossos projetos de arquitetura, interiores e visualização 3D.</p>
-        <p>Este espaço poderá receber imagens, descrições e links para cada projeto.</p>
+        <p>Explore uma seleção de projetos de arquitetura, interiores e visualização 3D.</p>
+
+        <div class="portfolio-carousel" aria-label="Carrossel de projetos">
+          <div class="portfolio-stage">
+            <img id="portfolioImage" class="portfolio-main-image"
+                 src="portfolio/projeto-01.jpg"
+                 alt="Imagem do projeto em destaque">
+            <button type="button" class="portfolio-arrow portfolio-prev"
+                    data-carousel-prev aria-label="Imagem anterior">‹</button>
+            <button type="button" class="portfolio-arrow portfolio-next"
+                    data-carousel-next aria-label="Próxima imagem">›</button>
+          </div>
+
+          <div class="portfolio-meta">
+            <div>
+              <h3 id="portfolioTitle">Projeto de interiores</h3>
+              <p id="portfolioDescription">Visualização arquitetônica e estudo de materiais.</p>
+            </div>
+            <span id="portfolioCounter" class="portfolio-counter">01 / 04</span>
+          </div>
+
+          <div id="portfolioThumbnails" class="portfolio-thumbnails"
+               aria-label="Selecionar projeto"></div>
+          <p class="portfolio-hint">Use as setas ou selecione uma miniatura para explorar os projetos.</p>
+        </div>
+
         <a class="panel-action" href="mailto:proj.damasioarq@gmail.com">
-          Solicitar portfólio ↗
+          Solicitar orçamento ↗
         </a>
       `
     },
@@ -173,6 +301,91 @@
     }
   };
 
+  const portfolioItems = [
+    {
+      image: 'portfolio/projeto-01.jpg',
+      title: 'Projeto de interiores',
+      description: 'Visualização arquitetônica e estudo de materiais.',
+      alt: 'Render de projeto de interiores'
+    },
+    {
+      image: 'portfolio/projeto-02.jpg',
+      title: 'Arquitetura residencial',
+      description: 'Estudo de fachada, volumetria e composição arquitetônica.',
+      alt: 'Render de projeto arquitetônico residencial'
+    },
+    {
+      image: 'portfolio/projeto-03.jpg',
+      title: 'Espaço comercial',
+      description: 'Projeto pensado para valorizar a identidade do negócio.',
+      alt: 'Render de ambiente comercial'
+    },
+    {
+      image: 'portfolio/projeto-04.jpg',
+      title: 'Modelagem e renderização 3D',
+      description: 'Apresentação visual para compreender o projeto antes da execução.',
+      alt: 'Imagem de visualização 3D'
+    }
+  ];
+
+  let portfolioIndex = 0;
+
+  function setupPortfolioCarousel() {
+    const image = document.getElementById('portfolioImage');
+    const title = document.getElementById('portfolioTitle');
+    const description = document.getElementById('portfolioDescription');
+    const counter = document.getElementById('portfolioCounter');
+    const thumbnails = document.getElementById('portfolioThumbnails');
+
+    if (!image || !thumbnails) return;
+
+    thumbnails.innerHTML = portfolioItems.map(function (item, index) {
+      return `
+        <button type="button"
+                class="portfolio-thumb${index === 0 ? ' is-active' : ''}"
+                data-carousel-index="${index}"
+                aria-label="Ver ${item.title}">
+          <img src="${item.image}" alt="" loading="lazy">
+        </button>
+      `;
+    }).join('');
+
+    function showPortfolioItem(index) {
+      portfolioIndex = (index + portfolioItems.length) % portfolioItems.length;
+      const item = portfolioItems[portfolioIndex];
+
+      image.src = item.image;
+      image.alt = item.alt;
+      title.textContent = item.title;
+      description.textContent = item.description;
+      counter.textContent =
+        String(portfolioIndex + 1).padStart(2, '0') + ' / ' +
+        String(portfolioItems.length).padStart(2, '0');
+
+      thumbnails.querySelectorAll('[data-carousel-index]').forEach(function (button, i) {
+        button.classList.toggle('is-active', i === portfolioIndex);
+        button.setAttribute('aria-current', i === portfolioIndex ? 'true' : 'false');
+      });
+    }
+
+    const previous = document.querySelector('[data-carousel-prev]');
+    const next = document.querySelector('[data-carousel-next]');
+
+    if (previous) previous.onclick = function () {
+      showPortfolioItem(portfolioIndex - 1);
+    };
+    if (next) next.onclick = function () {
+      showPortfolioItem(portfolioIndex + 1);
+    };
+
+    thumbnails.onclick = function (event) {
+      const button = event.target.closest('[data-carousel-index]');
+      if (button) showPortfolioItem(Number(button.dataset.carouselIndex));
+    };
+
+    showPortfolioItem(0);
+  }
+
   function openPanel(name) {
     const section = sections[name];
     if (!section) return;
@@ -180,6 +393,7 @@
     eyebrow.textContent = section.eyebrow;
     title.textContent = section.title;
     content.innerHTML = section.html;
+    if (name === 'projetos') setupPortfolioCarousel();
     panel.classList.add('is-open');
     panel.setAttribute('aria-hidden', 'false');
   }
