@@ -11,7 +11,63 @@
 <body class="single-scene ">
 
 <div id="pano"></div>
+<!-- MENU DO ESCRITÓRIO -->
+<header class="site-header">
+  <a class="brand" href="#" onclick="return false;">
+    <span class="brand-mark">A.</span>
+    <span>
+      <strong>DAMASIO ARQUITETURA</strong>
+      <small>ESPAÇOS · EXPERIÊNCIAS · INOVAÇÃO</small>
+    </span>
+  </a>
 
+  <nav class="main-menu">
+    <button data-panel="inicio">Início</button>
+    <button data-panel="sobre">Sobre nós</button>
+    <button data-panel="projetos">Projetos</button>
+    <button data-panel="contato">Contato</button>
+  </nav>
+
+  <button id="explore360" class="explore-button">
+    Explorar 360° ↗
+  </button>
+</header>
+
+<!-- TEXTO DE APRESENTAÇÃO -->
+<div class="welcome-card">
+  <span class="eyebrow">ARQUITETURA IMERSIVA</span>
+  <h2>Explore o espaço.<br>Imagine possibilidades.</h2>
+  <p>Conheça nosso universo arquitetônico em uma experiência interativa.</p>
+  <button data-panel="sobre" class="light-button">
+    Conheça o escritório →
+  </button>
+  <span class="drag-hint">↔ Arraste a imagem para explorar</span>
+</div>
+
+<!-- BOTÕES FLUTUANTES -->
+<div class="quick-actions">
+  <button data-panel="projetos" aria-label="Ver projetos">
+    <span>▦</span> Projetos
+  </button>
+  <button data-panel="contato" aria-label="Entrar em contato">
+    <span>↗</span> Contato
+  </button>
+</div>
+
+<!-- PAINEL INTERATIVO -->
+<div id="sitePanel" class="site-panel" aria-hidden="true">
+  <button id="closePanel" class="close-panel" aria-label="Fechar">×</button>
+  <span id="panelEyebrow" class="eyebrow">DAMASIO ARQUITETURA</span>
+  <h2 id="panelTitle">Bem-vindo</h2>
+  <div id="panelContent"></div>
+</div>
+
+<!-- RODAPÉ -->
+<div class="site-footer">
+  <span>© DAMASIO ARQUITETURA</span>
+  <span>EXPERIÊNCIA 360°</span>
+</div>
+  
 <div id="sceneList">
   <ul class="scenes">
     
@@ -66,6 +122,102 @@
 
 <script src="data.js"></script>
 <script src="index.js"></script>
+<script>
+(function () {
+  const panel = document.getElementById('sitePanel');
+  const title = document.getElementById('panelTitle');
+  const eyebrow = document.getElementById('panelEyebrow');
+  const content = document.getElementById('panelContent');
 
+  const sections = {
+    inicio: {
+      eyebrow: 'BEM-VINDO',
+      title: 'Explore nosso espaço',
+      html: `
+        <p>Explore o ambiente em 360° usando o mouse ou o toque na tela.</p>
+        <p>Arraste para olhar ao redor e use a roda do mouse para aproximar.</p>
+        <button class="panel-action" data-close-panel>
+          Voltar ao ambiente
+        </button>
+      `
+    },
+    sobre: {
+      eyebrow: 'QUEM SOMOS',
+      title: 'Arquitetura com propósito',
+      html: `
+        <p>Desenvolvemos espaços que unem estética, funcionalidade e identidade.</p>
+        <p>Nosso objetivo é transformar ideias em ambientes que valorizam a experiência de cada pessoa.</p>
+      `
+    },
+    projetos: {
+      eyebrow: 'PORTFÓLIO',
+      title: 'Nossos projetos',
+      html: `
+        <p>Explore nossos projetos de arquitetura, interiores e visualização 3D.</p>
+        <p>Este espaço poderá receber imagens, descrições e links para cada projeto.</p>
+        <a class="panel-action" href="mailto:proj.damasioarq@gmail.com">
+          Solicitar portfólio ↗
+        </a>
+      `
+    },
+    contato: {
+      eyebrow: 'VAMOS CONVERSAR',
+      title: 'Conte sua ideia',
+      html: `
+        <p>Tem um projeto em mente? Entre em contato para conversarmos.</p>
+        <a class="panel-action" href="mailto:proj.damasioarq@gmail.com">
+          Enviar e-mail ↗
+        </a>
+        <p class="panel-note">Substitua o e-mail pelo endereço profissional do escritório.</p>
+      `
+    }
+  };
+
+  function openPanel(name) {
+    const section = sections[name];
+    if (!section) return;
+
+    eyebrow.textContent = section.eyebrow;
+    title.textContent = section.title;
+    content.innerHTML = section.html;
+    panel.classList.add('is-open');
+    panel.setAttribute('aria-hidden', 'false');
+  }
+
+  function closePanel() {
+    panel.classList.remove('is-open');
+    panel.setAttribute('aria-hidden', 'true');
+  }
+
+  document.querySelectorAll('[data-panel]').forEach(function (button) {
+    button.addEventListener('click', function () {
+      openPanel(button.dataset.panel);
+    });
+  });
+
+  document.getElementById('closePanel').addEventListener('click', closePanel);
+
+  panel.addEventListener('click', function (event) {
+    if (event.target.closest('[data-close-panel]')) {
+      closePanel();
+    }
+  });
+
+  document.getElementById('explore360').addEventListener('click', function () {
+    closePanel();
+
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen?.().catch(function () {});
+    } else {
+      document.exitFullscreen?.();
+    }
+  });
+
+  document.addEventListener('keydown', function (event) {
+    if (event.key === 'Escape') closePanel();
+  });
+})();
+</script>
+  
 </body>
 </html>
