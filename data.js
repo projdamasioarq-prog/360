@@ -29,7 +29,26 @@ var APP_DATA = {
         "fov": 1.5707963267948966
       },
       "linkHotspots": [],
-      "infoHotspots": []
+      "infoHotspots": [
+  {
+    "yaw": -1.2,
+    "pitch": 0.0,
+    "title": "SOBRE NÓS",
+    "text": "Criamos espaços que unem arquitetura, identidade e funcionalidade."
+  },
+  {
+    "yaw": 0.8,
+    "pitch": 0.0,
+    "title": "PORTFÓLIO",
+    "text": "Conheça nossos projetos de arquitetura e interiores."
+  },
+  {
+    "yaw": 2.5,
+    "pitch": 0.0,
+    "title": "CONTATO",
+    "text": "Entre em contato para desenvolver seu próximo projeto."
+  }
+],
     }
   ],
   "name": "Project Title",
