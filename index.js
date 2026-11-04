@@ -1,17 +1,7 @@
+
 /*
- * Copyright 2016 Google Inc. All rights reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Marzipano - Damasio Arquitetura
+ * Integração do hotspot PORTFÓLIO com o painel do site.
  */
 'use strict';
 
@@ -21,7 +11,6 @@
   var screenfull = window.screenfull;
   var data = window.APP_DATA;
 
-  // Grab elements from DOM.
   var panoElement = document.querySelector('#pano');
   var sceneNameElement = document.querySelector('#titleBar .sceneName');
   var sceneListElement = document.querySelector('#sceneList');
@@ -30,8 +19,10 @@
   var autorotateToggleElement = document.querySelector('#autorotateToggle');
   var fullscreenToggleElement = document.querySelector('#fullscreenToggle');
 
-  // Detect desktop or mobile mode.
+  // Modo desktop e celular
   if (window.matchMedia) {
+    var mql = matchMedia("(max-width: 500px), (max-height: 500px)");
+
     var setMode = function() {
       if (mql.matches) {
         document.body.classList.remove('desktop');
@@ -41,45 +32,59 @@
         document.body.classList.add('desktop');
       }
     };
-    var mql = matchMedia("(max-width: 500px), (max-height: 500px)");
+
     setMode();
     mql.addListener(setMode);
   } else {
     document.body.classList.add('desktop');
   }
 
-  // Detect whether we are on a touch device.
+  // Touch
   document.body.classList.add('no-touch');
+
   window.addEventListener('touchstart', function() {
     document.body.classList.remove('no-touch');
     document.body.classList.add('touch');
   });
 
-  // Use tooltip fallback mode on IE < 11.
   if (bowser.msie && parseFloat(bowser.version) < 11) {
     document.body.classList.add('tooltip-fallback');
   }
 
-  // Viewer options.
+  // Viewer
   var viewerOpts = {
     controls: {
       mouseViewMode: data.settings.mouseViewMode
     }
   };
 
-  // Initialize viewer.
   var viewer = new Marzipano.Viewer(panoElement, viewerOpts);
 
-  // Create scenes.
-  var scenes = data.scenes.map(function(data) {
-    var urlPrefix = "tiles";
-    var source = Marzipano.ImageUrlSource.fromString(
-      urlPrefix + "/" + data.id + "/{z}/{f}/{y}/{x}.jpg",
-      { cubeMapPreviewUrl: urlPrefix + "/" + data.id + "/preview.jpg" });
-    var geometry = new Marzipano.CubeGeometry(data.levels);
+  // Criar cenas
+  var scenes = data.scenes.map(function(sceneData) {
 
-    var limiter = Marzipano.RectilinearView.limit.traditional(data.faceSize, 100*Math.PI/180, 120*Math.PI/180);
-    var view = new Marzipano.RectilinearView(data.initialViewParameters, limiter);
+    var urlPrefix = "tiles";
+
+    var source = Marzipano.ImageUrlSource.fromString(
+      urlPrefix + "/" + sceneData.id + "/{z}/{f}/{y}/{x}.jpg",
+      {
+        cubeMapPreviewUrl:
+          urlPrefix + "/" + sceneData.id + "/preview.jpg"
+      }
+    );
+
+    var geometry = new Marzipano.CubeGeometry(sceneData.levels);
+
+    var limiter = Marzipano.RectilinearView.limit.traditional(
+      sceneData.faceSize,
+      100 * Math.PI / 180,
+      120 * Math.PI / 180
+    );
+
+    var view = new Marzipano.RectilinearView(
+      sceneData.initialViewParameters,
+      limiter
+    );
 
     var scene = viewer.createScene({
       source: source,
@@ -88,76 +93,96 @@
       pinFirstLevel: true
     });
 
-    // Create link hotspots.
-    data.linkHotspots.forEach(function(hotspot) {
+    // Hotspots
+    sceneData.linkHotspots.forEach(function(hotspot) {
       var element = createLinkHotspotElement(hotspot);
-      scene.hotspotContainer().createHotspot(element, { yaw: hotspot.yaw, pitch: hotspot.pitch });
+
+      scene.hotspotContainer().createHotspot(element, {
+        yaw: hotspot.yaw,
+        pitch: hotspot.pitch
+      });
     });
 
-    // Create info hotspots.
-    data.infoHotspots.forEach(function(hotspot) {
+    sceneData.infoHotspots.forEach(function(hotspot) {
       var element = createInfoHotspotElement(hotspot);
-      scene.hotspotContainer().createHotspot(element, { yaw: hotspot.yaw, pitch: hotspot.pitch });
+
+      scene.hotspotContainer().createHotspot(element, {
+        yaw: hotspot.yaw,
+        pitch: hotspot.pitch
+      });
     });
 
     return {
-      data: data,
+      data: sceneData,
       scene: scene,
       view: view
     };
   });
 
-  // Set up autorotate, if enabled.
+  // Rotação automática
   var autorotate = Marzipano.autorotate({
     yawSpeed: 0.03,
     targetPitch: 0,
-    targetFov: Math.PI/2
+    targetFov: Math.PI / 2
   });
+
   if (data.settings.autorotateEnabled) {
     autorotateToggleElement.classList.add('enabled');
   }
 
-  // Set handler for autorotate toggle.
-  autorotateToggleElement.addEventListener('click', toggleAutorotate);
+  autorotateToggleElement.addEventListener(
+    'click',
+    toggleAutorotate
+  );
 
-  // Set up fullscreen mode, if supported.
+  // Tela cheia
   if (screenfull.enabled && data.settings.fullscreenButton) {
+
     document.body.classList.add('fullscreen-enabled');
+
     fullscreenToggleElement.addEventListener('click', function() {
       screenfull.toggle();
     });
+
     screenfull.on('change', function() {
-      if (screenfull.isFullscreen) {
-        fullscreenToggleElement.classList.add('enabled');
-      } else {
-        fullscreenToggleElement.classList.remove('enabled');
-      }
+      fullscreenToggleElement.classList.toggle(
+        'enabled',
+        screenfull.isFullscreen
+      );
     });
+
   } else {
     document.body.classList.add('fullscreen-disabled');
   }
 
-  // Set handler for scene list toggle.
-  sceneListToggleElement.addEventListener('click', toggleSceneList);
+  // Lista de cenas
+  sceneListToggleElement.addEventListener(
+    'click',
+    toggleSceneList
+  );
 
-  // Start with the scene list open on desktop.
   if (!document.body.classList.contains('mobile')) {
     showSceneList();
   }
 
-  // Set handler for scene switch.
   scenes.forEach(function(scene) {
-    var el = document.querySelector('#sceneList .scene[data-id="' + scene.data.id + '"]');
+
+    var el = document.querySelector(
+      '#sceneList .scene[data-id="' + scene.data.id + '"]'
+    );
+
+    if (!el) return;
+
     el.addEventListener('click', function() {
       switchScene(scene);
-      // On mobile, hide scene list after selecting a scene.
+
       if (document.body.classList.contains('mobile')) {
         hideSceneList();
       }
     });
   });
 
-  // DOM elements for view controls.
+  // Controles de visualização
   var viewUpElement = document.querySelector('#viewUp');
   var viewDownElement = document.querySelector('#viewDown');
   var viewLeftElement = document.querySelector('#viewLeft');
@@ -165,27 +190,74 @@
   var viewInElement = document.querySelector('#viewIn');
   var viewOutElement = document.querySelector('#viewOut');
 
-  // Dynamic parameters for controls.
   var velocity = 0.7;
   var friction = 3;
 
-  // Associate view controls with elements.
   var controls = viewer.controls();
-  controls.registerMethod('upElement',    new Marzipano.ElementPressControlMethod(viewUpElement,     'y', -velocity, friction), true);
-  controls.registerMethod('downElement',  new Marzipano.ElementPressControlMethod(viewDownElement,   'y',  velocity, friction), true);
-  controls.registerMethod('leftElement',  new Marzipano.ElementPressControlMethod(viewLeftElement,   'x', -velocity, friction), true);
-  controls.registerMethod('rightElement', new Marzipano.ElementPressControlMethod(viewRightElement,  'x',  velocity, friction), true);
-  controls.registerMethod('inElement',    new Marzipano.ElementPressControlMethod(viewInElement,  'zoom', -velocity, friction), true);
-  controls.registerMethod('outElement',   new Marzipano.ElementPressControlMethod(viewOutElement, 'zoom',  velocity, friction), true);
+
+  controls.registerMethod(
+    'upElement',
+    new Marzipano.ElementPressControlMethod(
+      viewUpElement, 'y', -velocity, friction
+    ),
+    true
+  );
+
+  controls.registerMethod(
+    'downElement',
+    new Marzipano.ElementPressControlMethod(
+      viewDownElement, 'y', velocity, friction
+    ),
+    true
+  );
+
+  controls.registerMethod(
+    'leftElement',
+    new Marzipano.ElementPressControlMethod(
+      viewLeftElement, 'x', -velocity, friction
+    ),
+    true
+  );
+
+  controls.registerMethod(
+    'rightElement',
+    new Marzipano.ElementPressControlMethod(
+      viewRightElement, 'x', velocity, friction
+    ),
+    true
+  );
+
+  controls.registerMethod(
+    'inElement',
+    new Marzipano.ElementPressControlMethod(
+      viewInElement, 'zoom', -velocity, friction
+    ),
+    true
+  );
+
+  controls.registerMethod(
+    'outElement',
+    new Marzipano.ElementPressControlMethod(
+      viewOutElement, 'zoom', velocity, friction
+    ),
+    true
+  );
 
   function sanitize(s) {
-    return s.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;');
+    return s.replace('&', '&amp;')
+      .replace('<', '&lt;')
+      .replace('>', '&gt;');
   }
 
   function switchScene(scene) {
     stopAutorotate();
-    scene.view.setParameters(scene.data.initialViewParameters);
+
+    scene.view.setParameters(
+      scene.data.initialViewParameters
+    );
+
     scene.scene.switchTo();
+
     startAutorotate();
     updateSceneName(scene);
     updateSceneList(scene);
@@ -198,6 +270,7 @@
   function updateSceneList(scene) {
     for (var i = 0; i < sceneElements.length; i++) {
       var el = sceneElements[i];
+
       if (el.getAttribute('data-id') === scene.data.id) {
         el.classList.add('current');
       } else {
@@ -225,6 +298,7 @@
     if (!autorotateToggleElement.classList.contains('enabled')) {
       return;
     }
+
     viewer.startMovement(autorotate);
     viewer.setIdleMovement(3000, autorotate);
   }
@@ -244,54 +318,77 @@
     }
   }
 
-  
-function createInfoHotspotElement(hotspot) {
-  // Etiqueta presa à posição do panorama 360°
-  var wrapper = document.createElement('div');
-  wrapper.classList.add('hotspot', 'wall-label-hotspot');
+  // HOTSPOTS E INTEGRAÇÃO COM PORTFÓLIO
+  function createInfoHotspotElement(hotspot) {
 
-  // Botão com o título
-  var button = document.createElement('button');
-  button.type = 'button';
-  button.classList.add('wall-label-button');
+    var wrapper = document.createElement('div');
+    wrapper.classList.add('hotspot', 'wall-label-hotspot');
 
-  var marker = document.createElement('span');
-  marker.classList.add('wall-label-marker');
-  marker.textContent = '+';
+    var button = document.createElement('button');
+    button.type = 'button';
+    button.classList.add('wall-label-button');
 
-  var title = document.createElement('span');
-  title.classList.add('wall-label-title');
-  title.textContent = hotspot.title || 'Saiba mais';
+    var marker = document.createElement('span');
+    marker.classList.add('wall-label-marker');
+    marker.textContent = '+';
 
-  button.appendChild(marker);
-  button.appendChild(title);
+    var title = document.createElement('span');
+    title.classList.add('wall-label-title');
+    title.textContent = hotspot.title || 'Saiba mais';
 
-  // Descrição que aparece ao clicar
-  var description = document.createElement('div');
-  description.classList.add('wall-label-description');
-  description.textContent = hotspot.text || '';
-  description.hidden = true;
+    button.appendChild(marker);
+    button.appendChild(title);
 
-  button.addEventListener('click', function(event) {
-    event.stopPropagation();
-    description.hidden = !description.hidden;
-    marker.textContent = description.hidden ? '+' : '−';
-  });
+    var description = document.createElement('div');
+    description.classList.add('wall-label-description');
+    description.textContent = hotspot.text || '';
+    description.hidden = true;
 
-  wrapper.appendChild(button);
-  wrapper.appendChild(description);
+    button.addEventListener('click', function(event) {
 
-  // Evita interferência dos controles de movimento
-  stopTouchAndScrollEventPropagation(wrapper);
+      event.stopPropagation();
 
-  return wrapper;
-}
+      // CLICOU EM PORTFÓLIO
+      if (
+        (hotspot.title || '').trim().toUpperCase() === 'PORTFÓLIO'
+      ) {
 
+        var portfolioButton = document.querySelector(
+          '[data-panel="projetos"]'
+        );
 
-  // Prevent touch and scroll events from reaching the parent element.
-  function stopTouchAndScrollEventPropagation(element, eventList) {
-    var eventList = [ 'touchstart', 'touchmove', 'touchend', 'touchcancel',
-                      'wheel', 'mousewheel' ];
+        if (portfolioButton) {
+          portfolioButton.click();
+        }
+
+        return;
+      }
+
+      // Outros hotspots continuam funcionando normalmente
+      description.hidden = !description.hidden;
+
+      marker.textContent = description.hidden ? '+' : '−';
+    });
+
+    wrapper.appendChild(button);
+    wrapper.appendChild(description);
+
+    stopTouchAndScrollEventPropagation(wrapper);
+
+    return wrapper;
+  }
+
+  function stopTouchAndScrollEventPropagation(element) {
+
+    var eventList = [
+      'touchstart',
+      'touchmove',
+      'touchend',
+      'touchcancel',
+      'wheel',
+      'mousewheel'
+    ];
+
     for (var i = 0; i < eventList.length; i++) {
       element.addEventListener(eventList[i], function(event) {
         event.stopPropagation();
@@ -305,6 +402,7 @@ function createInfoHotspotElement(hotspot) {
         return scenes[i];
       }
     }
+
     return null;
   }
 
@@ -314,10 +412,11 @@ function createInfoHotspotElement(hotspot) {
         return data.scenes[i];
       }
     }
+
     return null;
   }
 
-  // Display the initial scene.
+  // Inicializar panorama
   switchScene(scenes[0]);
 
 })();
