@@ -546,15 +546,27 @@ projetos: {
 <script>
 (function(){
   const modal=document.getElementById('glbModal');
-  const openButton=document.getElementById('openGlbViewer');
-  const closeButton=document.getElementById('closeGlbViewer');
-  if(!modal||!openButton||!closeButton)return;
-  function openViewer(){modal.classList.add('is-open');modal.setAttribute('aria-hidden','false');document.body.style.overflow='hidden';}
-  function closeViewer(){modal.classList.remove('is-open');modal.setAttribute('aria-hidden','true');document.body.style.overflow='';}
-  openButton.addEventListener('click',openViewer);
-  closeButton.addEventListener('click',closeViewer);
-  modal.addEventListener('click',function(event){if(event.target===modal)closeViewer();});
-  document.addEventListener('keydown',function(event){if(event.key==='Escape'&&modal.classList.contains('is-open'))closeViewer();});
+  if(!modal)return;
+  function openViewer(){
+    modal.classList.add('is-open');
+    modal.setAttribute('aria-hidden','false');
+    document.body.style.overflow='hidden';
+  }
+  function closeViewer(){
+    modal.classList.remove('is-open');
+    modal.setAttribute('aria-hidden','true');
+    document.body.style.overflow='';
+  }
+  // O cartão é criado dinamicamente pelo painel do portfólio.
+  // Delegação no document garante que o clique funcione após abrir o painel.
+  document.addEventListener('click',function(event){
+    if(event.target.closest('#openGlbViewer')){openViewer();return;}
+    if(event.target.closest('#closeGlbViewer')){closeViewer();return;}
+    if(event.target===modal)closeViewer();
+  });
+  document.addEventListener('keydown',function(event){
+    if(event.key==='Escape'&&modal.classList.contains('is-open'))closeViewer();
+  });
 })();
 </script>
 
