@@ -1485,3 +1485,63 @@ body.view-control-buttons .viewControlButton {
     height: 320px;
   }
 }
+
+/* ===== IDENTIDADE PROARQUI: MENU MINIMALISTA + ABERTURA ANIMADA ===== */
+.site-header{
+  min-height:76px;padding:12px clamp(20px,5vw,76px);
+  background:rgba(255,255,255,.94);backdrop-filter:blur(18px);
+  border-bottom:1px solid rgba(30,30,30,.09);color:#242424;
+  box-shadow:0 5px 24px rgba(0,0,0,.045);
+}
+.brand{display:flex;align-items:center;min-width:130px}
+.brand-logo{display:block;width:116px;height:52px;object-fit:contain}
+.main-menu{gap:clamp(18px,3vw,42px)}
+.main-menu button{
+  position:relative;padding:12px 0;color:#333;font-size:10px;
+  font-weight:600;letter-spacing:1.7px;text-transform:uppercase;
+}
+.main-menu button:after{
+  content:"";position:absolute;left:0;right:100%;bottom:5px;height:1px;
+  background:#858585;transition:right .25s ease;
+}
+.main-menu button:hover{opacity:1}
+.main-menu button:hover:after{right:0}
+.explore-button{
+  padding:12px 17px;background:#fff;border:1px solid #b8b8b8;
+  color:#333;font-size:10px;letter-spacing:1.4px;text-transform:uppercase;
+  transition:background .2s,color .2s,border-color .2s;
+}
+.explore-button:hover{background:#292929;color:#fff;border-color:#292929}
+.brand-intro{
+  position:fixed;inset:0;z-index:999999;display:flex;align-items:center;
+  justify-content:center;background:#fff;opacity:1;visibility:visible;
+  transition:opacity .8s ease,visibility .8s ease;
+}
+.brand-intro img{
+  display:block;width:min(260px,54vw);height:auto;opacity:0;
+  transform:translateY(12px) scale(.94);filter:blur(5px);
+  animation:proarquiReveal 1.45s cubic-bezier(.2,.75,.25,1) .18s forwards;
+}
+.brand-intro--hide{opacity:0;visibility:hidden;pointer-events:none}
+@keyframes proarquiReveal{
+  0%{opacity:0;transform:translateY(12px) scale(.94);filter:blur(5px)}
+  65%{opacity:1;filter:blur(0)}
+  100%{opacity:1;transform:translateY(0) scale(1);filter:blur(0)}
+}
+@media(max-width:760px){
+  .site-header{padding:10px 4%;min-height:68px;gap:8px}
+  .brand{min-width:0}
+  .brand-logo{width:86px;height:43px}
+  .main-menu{order:initial;width:auto;gap:clamp(10px,3vw,20px);justify-content:center}
+  .main-menu button{font-size:9px;letter-spacing:.8px}
+  .explore-button{padding:9px 10px;font-size:9px;letter-spacing:.5px}
+}
+@media(max-width:420px){
+  .site-header{flex-wrap:wrap;justify-content:center}
+  .brand{margin-right:auto}
+  .main-menu{order:3;width:100%;justify-content:space-around}
+}
+@media(prefers-reduced-motion:reduce){
+  .brand-intro img{animation:none;opacity:1;transform:none;filter:none}
+  .brand-intro{transition:none}
+}
