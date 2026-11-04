@@ -260,7 +260,27 @@ src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.3.0/model-viewer.min.j
       eyebrow: 'PORTFÓLIO',
       title: 'Nossos projetos',
       html: `
-        <p>Explore uma seleção de projetos de arquitetura, interiores e visualização 3D.</p>
+  <p>Explore uma seleção de projetos de arquitetura, interiores e visualização 3D.</p>
+
+  <!-- VISUALIZADOR 3D -->
+  <div class="glb-container">
+
+    <model-viewer
+      id="proarquiModel"
+      class="glb-viewer"
+      src="SEU-ARQUIVO.glb"
+      camera-controls
+      auto-rotate
+      rotation-per-second="15deg"
+      shadow-intensity="1"
+      exposure="1"
+      environment-image="neutral">
+    </model-viewer>
+
+  </div>
+
+  <!-- CARROSSEL DE IMAGENS -->
+  <div class="portfolio-carousel">
 
         <div class="portfolio-carousel" aria-label="Carrossel de projetos">
           <div class="portfolio-stage">
