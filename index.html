@@ -189,16 +189,15 @@ src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.3.0/model-viewer.min.j
 </style>
 </head>
 <body class="single-scene ">
+<div id="brandIntro" class="brand-intro" aria-label="PROARQUI">
+  <img src="assets/proarqui-logo.svg" alt="PROARQUI">
+</div>
 
 <div id="pano"></div>
 <!-- MENU DO ESCRITÓRIO -->
 <header class="site-header">
-  <a class="brand" href="#" onclick="return false;">
-    <span class="brand-mark">A.</span>
-    <span>
-      <strong>DAMASIO ARQUITETURA</strong>
-      <small>ESPAÇOS · EXPERIÊNCIAS · INOVAÇÃO</small>
-    </span>
+  <a class="brand" href="#" onclick="return false;" aria-label="PROARQUI - início">
+    <img src="assets/proarqui-logo.svg" alt="PROARQUI" class="brand-logo">
   </a>
 
   <nav class="main-menu">
@@ -553,5 +552,15 @@ projetos: {
 
 
 
+<script>
+(function(){
+  var intro=document.getElementById('brandIntro');
+  if(!intro) return;
+  window.setTimeout(function(){
+    intro.classList.add('brand-intro--hide');
+    window.setTimeout(function(){ intro.remove(); }, 850);
+  }, 2600);
+})();
+</script>
 </body>
 </html>
