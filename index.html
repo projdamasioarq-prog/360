@@ -153,6 +153,28 @@ src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.3.0/model-viewer.min.j
 }
 </style>
 
+
+/* CARTÃO DO PROJETO 3D E VISUALIZADOR EM MODAL */
+.glb-project-card{display:flex;align-items:center;gap:20px;width:100%;margin:22px 0 28px;padding:16px;text-align:left;color:#f4f1eb;background:linear-gradient(115deg,#17221b,#0d110f);border:1px solid rgba(220,230,220,.24);border-radius:12px;cursor:pointer;transition:border-color .2s,transform .2s}
+.glb-project-card:hover{border-color:#9ab7a2;transform:translateY(-2px)}
+.glb-card-visual{position:relative;display:grid;flex:0 0 116px;height:92px;place-items:center;overflow:hidden;border-radius:8px;background:radial-gradient(ellipse at center,#385342 0%,#18251d 62%,#101512 100%)}
+.glb-card-orbit{position:absolute;width:78px;height:34px;border:1px solid #b7cbbb;border-radius:50%;transform:rotate(-28deg)}
+.glb-card-cube{color:#fff;font-size:28px;font-weight:700;letter-spacing:.08em;text-shadow:0 2px 14px #000}
+.glb-card-copy{display:flex;flex-direction:column;gap:6px}
+.glb-card-copy strong{font-size:16px}
+.glb-card-copy>span:nth-child(2){color:rgba(255,255,255,.66);font-size:13px}
+.glb-card-copy .glb-card-cta{margin-top:5px;color:#b9cbbd;font-size:11px;letter-spacing:.12em}
+.glb-modal{position:fixed;inset:0;z-index:10000;display:none;align-items:center;justify-content:center;padding:24px;background:rgba(4,8,6,.94)}
+.glb-modal.is-open{display:flex}
+.glb-modal-dialog{position:relative;display:flex;flex-direction:column;width:min(1200px,100%);height:min(820px,92vh);overflow:hidden;background:#101512;border:1px solid rgba(220,230,220,.2);border-radius:14px;box-shadow:0 24px 90px rgba(0,0,0,.55)}
+.glb-modal-header{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:16px 20px;color:#fff}
+.glb-modal-header strong{font-size:14px;letter-spacing:.04em}
+.glb-modal-header span{display:block;margin-top:4px;color:rgba(255,255,255,.58);font-size:11px}
+.glb-modal-close{width:38px;height:38px;flex:0 0 auto;border:1px solid rgba(255,255,255,.25);border-radius:50%;background:transparent;color:#fff;font-size:25px;cursor:pointer}
+.glb-modal-viewer{display:block;flex:1;width:100%;min-height:0;background:radial-gradient(ellipse at center,#26372c,#0d110f 75%);--poster-color:transparent}
+.glb-modal-help{padding:12px 18px;color:rgba(255,255,255,.64);text-align:center;font-size:12px}
+@media(max-width:600px){.glb-project-card{gap:12px;padding:12px}.glb-card-visual{flex-basis:82px;height:78px}.glb-card-copy strong{font-size:14px}.glb-modal{padding:8px}.glb-modal-dialog{height:94vh;border-radius:10px}.glb-modal-header{padding:12px}}
+
 </head>
 <body class="single-scene ">
 
@@ -302,39 +324,15 @@ projetos: {
   html: `
     <p>Explore nossos projetos de arquitetura, interiores e visualização 3D.</p>
 
-    <!-- MODELO 3D -->
-    <div class="glb-container">
-
-      <model-viewer
-        id="proarquiModel"
-        class="glb-viewer"
-        src="SCG%2BVacation%2BHome%2B%231%2B-%2BNatural%2BStyle%2B-%2Bver13%20(1).glb"
-        alt="Projeto arquitetônico 3D"
-        camera-controls
-        auto-rotate
-        rotation-per-second="15deg"
-        shadow-intensity="1"
-        exposure="1"
-        environment-image="neutral"
-        interaction-prompt="auto"
-        loading="eager">
-
-      </model-viewer>
-
-      <div class="glb-caption">
-        <span>EXPERIÊNCIA ARQUITETÔNICA 3D</span>
-
-        <button class="glb-fullscreen"
-          onclick="document.getElementById('proarquiModel').requestFullscreen()">
-          Tela cheia ↗
-        </button>
-      </div>
-
-      <p id="glbError" class="glb-error" hidden>
-        Não foi possível carregar o modelo. Verifique o arquivo GLB.
-      </p>
-
-    </div>
+    <!-- Projeto 3D: clique para abrir o visualizador -->
+    <button type="button" class="glb-project-card" id="openGlbViewer" aria-haspopup="dialog" aria-controls="glbModal">
+      <span class="glb-card-visual" aria-hidden="true"><span class="glb-card-orbit"></span><span class="glb-card-cube">3D</span></span>
+      <span class="glb-card-copy">
+        <strong>SCG+ Vacation Home #1</strong>
+        <span>Natural Style · Modelo 3D interativo</span>
+        <span class="glb-card-cta">EXPLORAR PROJETO ↗</span>
+      </span>
+    </button>
 
     <!-- CARROSSEL DE IMAGENS -->
     <div class="portfolio-carousel" aria-label="Carrossel de projetos">
@@ -382,9 +380,6 @@ projetos: {
     </a>
   `
 },
-
-      `
-    },
     contato: {
       eyebrow: 'VAMOS CONVERSAR',
       title: 'Conte sua ideia',
@@ -530,5 +525,38 @@ projetos: {
 })();
 </script>
   
+
+<!-- VISUALIZADOR 3D EM TELA SOBREPOSTA -->
+<div id="glbModal" class="glb-modal" role="dialog" aria-modal="true" aria-labelledby="glbModalTitle" aria-hidden="true">
+  <div class="glb-modal-dialog">
+    <div class="glb-modal-header">
+      <div><strong id="glbModalTitle">SCG+ Vacation Home #1</strong><span>Natural Style · Visualização 3D</span></div>
+      <button type="button" class="glb-modal-close" id="closeGlbViewer" aria-label="Fechar visualizador">×</button>
+    </div>
+    <model-viewer id="proarquiModel" class="glb-modal-viewer"
+      src="SCG%2BVacation%2BHome%2B%231%2B-%2BNatural%2BStyle%2B-%2Bver13%20(1).glb"
+      alt="Modelo 3D da SCG Vacation Home em estilo Natural Style"
+      camera-controls auto-rotate rotation-per-second="15deg"
+      shadow-intensity="1" exposure="1" environment-image="neutral"
+      interaction-prompt="auto" loading="eager" reveal="auto">
+    </model-viewer>
+    <div class="glb-modal-help">Arraste com o mouse para girar · Use o scroll para aproximar ou afastar</div>
+  </div>
+</div>
+<script>
+(function(){
+  const modal=document.getElementById('glbModal');
+  const openButton=document.getElementById('openGlbViewer');
+  const closeButton=document.getElementById('closeGlbViewer');
+  if(!modal||!openButton||!closeButton)return;
+  function openViewer(){modal.classList.add('is-open');modal.setAttribute('aria-hidden','false');document.body.style.overflow='hidden';}
+  function closeViewer(){modal.classList.remove('is-open');modal.setAttribute('aria-hidden','true');document.body.style.overflow='';}
+  openButton.addEventListener('click',openViewer);
+  closeButton.addEventListener('click',closeViewer);
+  modal.addEventListener('click',function(event){if(event.target===modal)closeViewer();});
+  document.addEventListener('keydown',function(event){if(event.key==='Escape'&&modal.classList.contains('is-open'))closeViewer();});
+})();
+</script>
+
 </body>
 </html>
