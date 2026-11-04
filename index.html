@@ -175,6 +175,15 @@ src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.3.0/model-viewer.min.j
 .glb-modal-help{padding:12px 18px;color:rgba(255,255,255,.64);text-align:center;font-size:12px}
 @media(max-width:600px){.glb-project-card{gap:12px;padding:12px}.glb-card-visual{flex-basis:82px;height:78px}.glb-card-copy strong{font-size:14px}.glb-modal{padding:8px}.glb-modal-dialog{height:94vh;border-radius:10px}.glb-modal-header{padding:12px}}
 
+
+/* Visualizador 3D diretamente dentro do painel de portfólio */
+.glb-container{margin:18px 0 26px;background:#101512;border:1px solid rgba(220,230,220,.18);border-radius:12px;overflow:hidden}
+.glb-inline-viewer{display:block;width:100%;height:clamp(300px,55vh,560px);background:radial-gradient(ellipse at center,#344638,#101512 78%);--poster-color:transparent}
+.glb-inline-caption{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px;padding:12px 15px;color:#fff;font:11px Arial,sans-serif;letter-spacing:.04em}
+.glb-inline-caption span{color:rgba(255,255,255,.62)}
+.site-panel.portfolio-panel{width:min(780px,92%);max-height:90vh}
+@media(max-width:600px){.glb-inline-viewer{height:42vh;min-height:260px}.site-panel.portfolio-panel{width:94%;max-height:88vh;padding:25px 16px}}
+
 </head>
 <body class="single-scene ">
 
@@ -324,15 +333,27 @@ projetos: {
   html: `
     <p>Explore nossos projetos de arquitetura, interiores e visualização 3D.</p>
 
-    <!-- Projeto 3D: clique para abrir o visualizador -->
-    <button type="button" class="glb-project-card" id="openGlbViewer" aria-haspopup="dialog" aria-controls="glbModal" onclick="document.getElementById('glbModal').classList.add('is-open');document.getElementById('glbModal').setAttribute('aria-hidden','false');document.body.style.overflow='hidden';">
-      <span class="glb-card-visual" aria-hidden="true"><span class="glb-card-orbit"></span><span class="glb-card-cube">3D</span></span>
-      <span class="glb-card-copy">
-        <strong>SCG+ Vacation Home #1</strong>
-        <span>Natural Style · Modelo 3D interativo</span>
-        <span class="glb-card-cta">EXPLORAR PROJETO ↗</span>
-      </span>
-    </button>
+    <!-- MODELO 3D INTERATIVO: aparece diretamente ao abrir o PORTFÓLIO -->
+    <div class="glb-container">
+      <model-viewer
+        id="proarquiModel"
+        class="glb-inline-viewer"
+        src="SCG%2BVacation%2BHome%2B%231%2B-%2BNatural%2BStyle%2B-%2Bver13%20(1).glb"
+        alt="SCG+ Vacation Home #1 - Natural Style"
+        camera-controls
+        auto-rotate
+        rotation-per-second="15deg"
+        shadow-intensity="1"
+        exposure="1"
+        environment-image="neutral"
+        interaction-prompt="auto"
+        loading="eager">
+      </model-viewer>
+      <div class="glb-inline-caption">
+        <strong>SCG+ VACATION HOME #1 · NATURAL STYLE</strong>
+        <span>Arraste com o mouse para girar · Scroll para zoom</span>
+      </div>
+    </div>
 
     <!-- CARROSSEL DE IMAGENS -->
     <div class="portfolio-carousel" aria-label="Carrossel de projetos">
@@ -486,6 +507,7 @@ projetos: {
     title.textContent = section.title;
     content.innerHTML = section.html;
     if (name === 'projetos') setupPortfolioCarousel();
+    panel.classList.toggle('portfolio-panel', name === 'projetos');
     panel.classList.add('is-open');
     panel.setAttribute('aria-hidden', 'false');
   }
@@ -526,49 +548,7 @@ projetos: {
 </script>
   
 
-<!-- VISUALIZADOR 3D EM TELA SOBREPOSTA -->
-<div id="glbModal" class="glb-modal" role="dialog" aria-modal="true" aria-labelledby="glbModalTitle" aria-hidden="true" onclick="if(event.target===this){this.classList.remove('is-open');this.setAttribute('aria-hidden','true');document.body.style.overflow='';}">
-  <div class="glb-modal-dialog">
-    <div class="glb-modal-header">
-      <div><strong id="glbModalTitle">SCG+ Vacation Home #1</strong><span>Natural Style · Visualização 3D</span></div>
-      <button type="button" class="glb-modal-close" id="closeGlbViewer" aria-label="Fechar visualizador" onclick="document.getElementById('glbModal').classList.remove('is-open');document.getElementById('glbModal').setAttribute('aria-hidden','true');document.body.style.overflow='';">×</button>
-    </div>
-    <model-viewer id="proarquiModel" class="glb-modal-viewer"
-      src="SCG%2BVacation%2BHome%2B%231%2B-%2BNatural%2BStyle%2B-%2Bver13%20(1).glb"
-      alt="Modelo 3D da SCG Vacation Home em estilo Natural Style"
-      camera-controls auto-rotate rotation-per-second="15deg"
-      shadow-intensity="1" exposure="1" environment-image="neutral"
-      interaction-prompt="auto" loading="eager" reveal="auto">
-    </model-viewer>
-    <div class="glb-modal-help">Arraste com o mouse para girar · Use o scroll para aproximar ou afastar</div>
-  </div>
-</div>
-<script>
-(function(){
-  const modal=document.getElementById('glbModal');
-  if(!modal)return;
-  function openViewer(){
-    modal.classList.add('is-open');
-    modal.setAttribute('aria-hidden','false');
-    document.body.style.overflow='hidden';
-  }
-  function closeViewer(){
-    modal.classList.remove('is-open');
-    modal.setAttribute('aria-hidden','true');
-    document.body.style.overflow='';
-  }
-  // O cartão é criado dinamicamente pelo painel do portfólio.
-  // Delegação no document garante que o clique funcione após abrir o painel.
-  document.addEventListener('click',function(event){
-    if(event.target.closest('#openGlbViewer')){openViewer();return;}
-    if(event.target.closest('#closeGlbViewer')){closeViewer();return;}
-    if(event.target===modal)closeViewer();
-  });
-  document.addEventListener('keydown',function(event){
-    if(event.key==='Escape'&&modal.classList.contains('is-open'))closeViewer();
-  });
-})();
-</script>
+
 
 </body>
 </html>
