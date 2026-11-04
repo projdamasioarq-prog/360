@@ -1545,3 +1545,30 @@ body.view-control-buttons .viewControlButton {
   .brand-intro img{animation:none;opacity:1;transform:none;filter:none}
   .brand-intro{transition:none}
 }
+
+/* ===== AJUSTE DA ABERTURA: LOGO CENTRAL E ANIMAÇÃO MAIS FLUIDA ===== */
+.brand-intro{
+  position:fixed;inset:0;z-index:999999;
+  display:flex;align-items:center;justify-content:center;
+  width:100vw;height:100vh;min-height:100dvh;
+  padding:24px;background:#fff;
+  opacity:1;visibility:visible;
+  transition:opacity 1.5s ease-in-out,visibility 1.5s ease-in-out;
+}
+.brand-intro img{
+  display:block;width:min(280px,58vw);max-height:42vh;height:auto;
+  object-fit:contain;margin:auto;
+  opacity:0;transform:scale(.96);filter:blur(3px);
+  animation:proarquiReveal 3.2s cubic-bezier(.22,.61,.36,1) .25s forwards;
+}
+.brand-intro--hide{opacity:0;visibility:hidden;pointer-events:none}
+@keyframes proarquiReveal{
+  0%{opacity:0;transform:scale(.96);filter:blur(3px)}
+  35%{opacity:.65;filter:blur(1px)}
+  70%{opacity:1;filter:blur(0)}
+  100%{opacity:1;transform:scale(1);filter:blur(0)}
+}
+@media(prefers-reduced-motion:reduce){
+  .brand-intro img{animation:none;opacity:1;transform:none;filter:none}
+  .brand-intro{transition:none}
+}
