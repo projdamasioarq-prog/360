@@ -325,7 +325,7 @@ projetos: {
     <p>Explore nossos projetos de arquitetura, interiores e visualização 3D.</p>
 
     <!-- Projeto 3D: clique para abrir o visualizador -->
-    <button type="button" class="glb-project-card" id="openGlbViewer" aria-haspopup="dialog" aria-controls="glbModal">
+    <button type="button" class="glb-project-card" id="openGlbViewer" aria-haspopup="dialog" aria-controls="glbModal" onclick="document.getElementById('glbModal').classList.add('is-open');document.getElementById('glbModal').setAttribute('aria-hidden','false');document.body.style.overflow='hidden';">
       <span class="glb-card-visual" aria-hidden="true"><span class="glb-card-orbit"></span><span class="glb-card-cube">3D</span></span>
       <span class="glb-card-copy">
         <strong>SCG+ Vacation Home #1</strong>
@@ -527,11 +527,11 @@ projetos: {
   
 
 <!-- VISUALIZADOR 3D EM TELA SOBREPOSTA -->
-<div id="glbModal" class="glb-modal" role="dialog" aria-modal="true" aria-labelledby="glbModalTitle" aria-hidden="true">
+<div id="glbModal" class="glb-modal" role="dialog" aria-modal="true" aria-labelledby="glbModalTitle" aria-hidden="true" onclick="if(event.target===this){this.classList.remove('is-open');this.setAttribute('aria-hidden','true');document.body.style.overflow='';}">
   <div class="glb-modal-dialog">
     <div class="glb-modal-header">
       <div><strong id="glbModalTitle">SCG+ Vacation Home #1</strong><span>Natural Style · Visualização 3D</span></div>
-      <button type="button" class="glb-modal-close" id="closeGlbViewer" aria-label="Fechar visualizador">×</button>
+      <button type="button" class="glb-modal-close" id="closeGlbViewer" aria-label="Fechar visualizador" onclick="document.getElementById('glbModal').classList.remove('is-open');document.getElementById('glbModal').setAttribute('aria-hidden','true');document.body.style.overflow='';">×</button>
     </div>
     <model-viewer id="proarquiModel" class="glb-modal-viewer"
       src="SCG%2BVacation%2BHome%2B%231%2B-%2BNatural%2BStyle%2B-%2Bver13%20(1).glb"
