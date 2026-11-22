@@ -408,3 +408,137 @@ html > #screenOverlay #portfolioActions .portfolio-pair.is-active {
 #screenOverlay .quick-actions{position:absolute;pointer-events:auto}
 #screenOverlay .site-panel{position:fixed;pointer-events:none}
 #screenOverlay .site-panel.is-open{pointer-events:auto}
+
+
+/* PROARQUI 3D — interface 2D fixa, independente da câmera panorâmica. */
+html, body { overflow:hidden!important; }
+html > #screenOverlay {
+  position:fixed!important; inset:0!important;
+  width:100vw!important; height:100vh!important;
+  z-index:1000!important; overflow:hidden!important;
+  transform:none!important; perspective:none!important; filter:none!important;
+  pointer-events:none!important;
+}
+html > #screenOverlay > * { transform-style:flat!important; }
+html > #screenOverlay > .site-header {
+  position:fixed!important; top:0!important; left:0!important; right:0!important;
+  width:100vw!important; z-index:1100!important;
+}
+html > #screenOverlay > .quick-actions {
+  position:fixed!important; right:clamp(16px,3vw,48px)!important;
+  bottom:clamp(22px,7vh,70px)!important; z-index:1200!important;
+  pointer-events:auto!important;
+}
+html > #screenOverlay > #lobbyActions {
+  position:fixed!important; inset:0!important;
+  width:100vw!important; height:100vh!important;
+  z-index:1150!important; transform:none!important;
+}
+html > #screenOverlay > #portfolioActions {
+  position:fixed!important; inset:0!important;
+  width:100vw!important; height:100vh!important;
+  z-index:1140!important; transform:none!important;
+}
+html > #screenOverlay > .fixed-scene-hotspot {
+  position:fixed!important; margin:0!important;
+  transform:translate(-50%,-50%)!important;
+  z-index:1160!important;
+}
+html > #screenOverlay > #aboutPanel,
+html > #screenOverlay > #sitePanel {
+  position:fixed!important; z-index:1400!important;
+}
+
+/* Glassmorphism consistente para todos os botões sobre o tour. */
+html > #screenOverlay .quick-actions button,
+html > #screenOverlay .quick-actions a,
+html > #screenOverlay .lobby-action,
+html > #screenOverlay .portfolio-project,
+html > #screenOverlay .restored-menu button,
+html > #screenOverlay .restored-menu a,
+html > #screenOverlay #sceneListToggle,
+html > #screenOverlay #autorotateToggle,
+html > #screenOverlay #fullscreenToggle,
+html > #screenOverlay .viewControlButton {
+  -webkit-backdrop-filter:blur(18px) saturate(145%)!important;
+  backdrop-filter:blur(18px) saturate(145%)!important;
+  background:linear-gradient(135deg,rgba(245,248,244,.20),rgba(20,29,23,.48))!important;
+  border:1px solid rgba(255,255,255,.48)!important;
+  border-radius:12px!important;
+  color:#fff!important;
+  box-shadow:0 8px 28px rgba(0,0,0,.22),inset 0 1px 0 rgba(255,255,255,.22)!important;
+  text-shadow:0 1px 8px rgba(0,0,0,.42);
+  transition:background .22s ease,border-color .22s ease,box-shadow .22s ease,transform .22s ease!important;
+}
+html > #screenOverlay .quick-actions button,
+html > #screenOverlay .quick-actions a {
+  min-height:48px!important; min-width:156px!important;
+  padding:13px 18px!important; gap:12px!important;
+  font:600 11px Manrope,"DM Sans",sans-serif!important;
+  letter-spacing:.12em!important; text-transform:uppercase!important;
+}
+html > #screenOverlay .quick-actions button span,
+html > #screenOverlay .quick-actions a span {
+  color:#d5e5d8!important; font-size:18px!important;
+}
+html > #screenOverlay .lobby-action,
+html > #screenOverlay .portfolio-project {
+  min-height:42px!important; padding:11px 19px!important;
+  border-radius:10px!important;
+  font:600 10px Manrope,"DM Sans",sans-serif!important;
+  letter-spacing:.13em!important;
+}
+html > #screenOverlay .portfolio-project {
+  min-width:124px!important;
+  background:linear-gradient(135deg,rgba(245,248,244,.25),rgba(20,29,23,.55))!important;
+}
+html > #screenOverlay .quick-actions button:hover,
+html > #screenOverlay .quick-actions a:hover,
+html > #screenOverlay .lobby-action:hover,
+html > #screenOverlay .portfolio-project:hover,
+html > #screenOverlay .quick-actions button:focus-visible,
+html > #screenOverlay .quick-actions a:focus-visible,
+html > #screenOverlay .lobby-action:focus-visible,
+html > #screenOverlay .portfolio-project:focus-visible {
+  background:linear-gradient(135deg,rgba(211,232,216,.38),rgba(36,65,46,.68))!important;
+  border-color:rgba(226,245,230,.9)!important;
+  box-shadow:0 10px 32px rgba(0,0,0,.3),0 0 0 3px rgba(208,230,214,.12)!important;
+  outline:none!important;
+}
+html > #screenOverlay .fixed-scene-hotspot .link-hotspot-icon {
+  filter:drop-shadow(0 5px 14px rgba(0,0,0,.5))!important;
+}
+html > #screenOverlay .fixed-scene-hotspot .link-hotspot-tooltip {
+  border:1px solid rgba(255,255,255,.35)!important;
+  border-radius:9px!important;
+  background:rgba(19,27,22,.72)!important;
+  -webkit-backdrop-filter:blur(16px)!important;
+  backdrop-filter:blur(16px)!important;
+  color:#fff!important;
+  padding:10px 13px!important;
+  letter-spacing:.1em!important;
+  box-shadow:0 8px 24px rgba(0,0,0,.22)!important;
+}
+html > #screenOverlay .info-hotspot .info-hotspot-header {
+  border:1px solid rgba(255,255,255,.72)!important;
+  box-shadow:0 5px 20px rgba(0,0,0,.3)!important;
+}
+@media(max-width:700px) {
+  html > #screenOverlay > .quick-actions {
+    right:14px!important; bottom:16px!important;
+    flex-direction:row!important; gap:8px!important;
+  }
+  html > #screenOverlay .quick-actions button,
+  html > #screenOverlay .quick-actions a {
+    min-width:0!important; min-height:43px!important;
+    padding:11px 13px!important; font-size:9px!important;
+  }
+  html > #screenOverlay .lobby-action {
+    min-width:100px!important; min-height:40px!important;
+    padding:10px 12px!important; font-size:9px!important;
+  }
+  html > #screenOverlay .portfolio-project {
+    min-width:102px!important; min-height:38px!important;
+    padding:9px 10px!important; font-size:8px!important;
+  }
+}
