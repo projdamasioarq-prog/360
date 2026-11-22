@@ -35,6 +35,14 @@
   var aboutActionElement = document.querySelector('#aboutAction');
   var aboutPanelElement = document.querySelector('#aboutPanel');
   var aboutCloseElement = document.querySelector('#aboutClose');
+  var menuPortfolioElement = document.querySelector('#menuPortfolio');
+  var menuAboutElement = document.querySelector('#menuAbout');
+
+  // Menu principal restaurado: controles do visualizador ficam ocultos.
+  if (menuPortfolioElement) menuPortfolioElement.addEventListener('click', function() {
+    switchScene(findSceneById('1-portiflio'));
+  });
+  if (menuAboutElement) menuAboutElement.addEventListener('click', openAboutPanel);
 
   // Ações fixas sobre a cena inicial, independentes da câmera 360°.
 
