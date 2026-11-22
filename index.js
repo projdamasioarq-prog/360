@@ -191,19 +191,29 @@
     };
   });
 
-  // Calcula a posição dos marcadores no enquadramento inicial e congela
-  // essa posição em pixels, sem acompanhar o movimento posterior da câmera.
-  function positionFixedHotspots() {
+  // Cada marcador mantém sua própria posição na tela, calculada a partir
+  // do enquadramento inicial da cena. Apenas os marcadores da cena ativa
+  // aparecem; os demais ficam ocultos até a respectiva cena ser aberta.
+  function positionFixedHotspots(activeScene) {
     if (viewer.updateSize) viewer.updateSize();
     scenes.forEach(function(sceneItem) {
+      var isActive = !activeScene || sceneItem === activeScene;
+      sceneItem.fixedHotspots.forEach(function(item) {
+        if (!isActive) {
+          item.element.style.display = 'none';
+          return;
+        }
+      });
+      if (!isActive) return;
+
       var currentParameters = sceneItem.view.parameters();
       sceneItem.view.setParameters(sceneItem.data.initialViewParameters);
       sceneItem.fixedHotspots.forEach(function(item) {
         var point = sceneItem.view.coordinatesToScreen(item.coordinates);
-        if (point) {
+        if (point && isFinite(point.x) && isFinite(point.y)) {
           item.element.style.left = point.x + 'px';
           item.element.style.top = point.y + 'px';
-          item.element.style.display = '';
+          item.element.style.display = 'block';
         } else {
           item.element.style.display = 'none';
         }
@@ -212,9 +222,13 @@
     });
   }
 
-  positionFixedHotspots();
   window.addEventListener('resize', function() {
-    window.requestAnimationFrame(positionFixedHotspots);
+    window.requestAnimationFrame(function() {
+      var active = scenes.filter(function(item) {
+        return item.data.id === currentSceneId;
+      })[0];
+      positionFixedHotspots(active);
+    });
   });
 
   // Set up autorotate, if enabled.
@@ -305,10 +319,16 @@
     aboutPanelElement.setAttribute('aria-hidden', 'true');
   }
 
+  var currentSceneId = null;
+
   function switchScene(scene) {
+    currentSceneId = scene.data.id;
     stopAutorotate();
     scene.view.setParameters(scene.data.initialViewParameters);
     scene.scene.switchTo();
+    window.requestAnimationFrame(function() {
+      positionFixedHotspots(scene);
+    });
     startAutorotate();
     updateSceneName(scene);
     updateSceneList(scene);
