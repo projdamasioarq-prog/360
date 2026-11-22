@@ -337,7 +337,7 @@ html > #screenOverlay #portfolioActions .portfolio-pair.is-active {
 .restored-menu button,.restored-menu a{position:relative;padding:10px 0;border:0;background:transparent;color:#fff;font:600 11px "DM Sans",Arial,sans-serif;letter-spacing:.13em;text-transform:uppercase;white-space:nowrap;cursor:pointer}
 .restored-menu button:after,.restored-menu a:after{content:"";position:absolute;left:0;right:100%;bottom:3px;height:1px;background:#c7d3c8;transition:right .25s ease}
 .restored-menu button:hover:after,.restored-menu a:hover:after{right:0}
-#sceneList,#sceneListToggle,#autorotateToggle,#fullscreenToggle,.bottom-note,.viewControlButton,#lobbyActions,#portfolioActions,.fixed-scene-hotspot,#titleBar{display:none!important}
+#sceneList,#sceneListToggle,#autorotateToggle,#fullscreenToggle,.bottom-note,.viewControlButton,#titleBar{display:none!important}
 .site-header{pointer-events:none}
 .site-header .brand,.site-header .restored-menu{pointer-events:auto}
 @media(max-width:650px){.site-header{padding:16px 18px}.restored-menu{gap:14px;margin-right:0}.restored-menu button,.restored-menu a{font-size:9px;letter-spacing:.07em}.header-right{display:none}.brand-logo{width:42px;height:42px}.brand-copy{display:none}}
