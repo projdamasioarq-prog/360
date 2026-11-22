@@ -341,3 +341,31 @@ html > #screenOverlay #portfolioActions .portfolio-pair.is-active {
 .site-header{pointer-events:none}
 .site-header .brand,.site-header .restored-menu{pointer-events:auto}
 @media(max-width:650px){.site-header{padding:16px 18px}.restored-menu{gap:14px;margin-right:0}.restored-menu button,.restored-menu a{font-size:9px;letter-spacing:.07em}.header-right{display:none}.brand-logo{width:42px;height:42px}.brand-copy{display:none}}
+
+
+/* Navegação recuperada da versão anterior do tour 360. */
+.restored-menu{display:flex;align-items:center;gap:clamp(16px,2.2vw,32px);pointer-events:auto;margin-left:auto;margin-right:28px}
+.restored-menu button,.restored-menu a{position:relative;padding:10px 0;border:0;background:transparent;color:#fff;font:600 11px "DM Sans",Arial,sans-serif;letter-spacing:.13em;text-transform:uppercase;white-space:nowrap;cursor:pointer;text-decoration:none}
+.restored-menu button:after,.restored-menu a:after{content:"";position:absolute;left:0;right:100%;bottom:3px;height:1px;background:#c7d3c8;transition:right .25s ease}
+.restored-menu button:hover:after,.restored-menu a:hover:after{right:0}
+.quick-actions{position:fixed;z-index:1002;left:50%;bottom:34px;display:flex;align-items:center;gap:12px;transform:translateX(-50%);pointer-events:auto}
+.quick-actions button,.quick-actions a{display:inline-flex;align-items:center;justify-content:center;gap:9px;min-width:126px;padding:12px 17px;border:1px solid rgba(255,255,255,.58);border-radius:3px;background:rgba(20,22,19,.58);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);color:#fff;font:600 10px "DM Sans",Arial,sans-serif;letter-spacing:.13em;text-transform:uppercase;text-decoration:none;cursor:pointer;transition:background .2s,border-color .2s}
+.quick-actions button:hover,.quick-actions a:hover{background:rgba(255,255,255,.18);border-color:#fff}
+.quick-actions span{font-size:14px;line-height:1}
+html > #screenOverlay > .quick-actions{pointer-events:auto}
+html > #screenOverlay > .site-header{pointer-events:none}
+html > #screenOverlay > .site-header .brand,
+html > #screenOverlay > .site-header .restored-menu{pointer-events:auto}
+@media(max-width:700px){
+ .site-header{padding:15px 16px}
+ .restored-menu{gap:12px;margin-right:0}
+ .restored-menu button,.restored-menu a{font-size:8px;letter-spacing:.06em}
+ .header-right{display:none}
+ .quick-actions{bottom:22px;gap:8px}
+ .quick-actions button,.quick-actions a{min-width:112px;padding:11px 12px;font-size:9px}
+}
+@media(max-width:390px){
+ .restored-menu{gap:8px}
+ .restored-menu button,.restored-menu a{font-size:7px}
+ .quick-actions button,.quick-actions a{min-width:100px}
+}
