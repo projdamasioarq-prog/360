@@ -11,6 +11,7 @@
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="vendor/reset.min.css">
   <link rel="stylesheet" href="style.css?v=20261122m">
+<script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.3.0/model-viewer.min.js"></script>
 </head>
 <body class="multiple-scenes">
   <div id="pano" aria-label="Visualização panorâmica 360 graus"></div>
@@ -39,8 +40,19 @@
 
 
   <div class="quick-actions" aria-label="Acesso rápido">
-    <button type="button" id="quickPortfolio"><span aria-hidden="true">▦</span> Portfólio</button>
-    <a href="https://api.whatsapp.com/send/?phone=5511947869761&text&type=phone_number&app_absent=0" target="_blank" rel="noopener noreferrer"><span aria-hidden="true">↗</span> Contato</a>
+    <button type="button" data-panel="projetos" aria-label="Abrir projetos e visualizador 3D">
+      <span aria-hidden="true">▦</span> Projetos
+    </button>
+    <a href="https://api.whatsapp.com/send/?phone=5511947869761&text&type=phone_number&app_absent=0" target="_blank" rel="noopener noreferrer" aria-label="Entrar em contato">
+      <span aria-hidden="true">↗</span> Contato
+    </a>
+  </div>
+
+  <div id="sitePanel" class="site-panel" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="panelTitle">
+    <button id="closePanel" class="close-panel" aria-label="Fechar">×</button>
+    <span id="panelEyebrow" class="eyebrow">PROARQUI 3D</span>
+    <h2 id="panelTitle">Portfólio</h2>
+    <div id="panelContent"></div>
   </div>
 
   <div id="titleBar"><h1 class="sceneName"></h1></div>
@@ -113,5 +125,252 @@
   <script src="vendor/marzipano.js"></script>
   <script src="data.js"></script>
   <script src="index.js?v=20261122m"></script>
+<script>
+(function () {
+  const panel = document.getElementById('sitePanel');
+  const title = document.getElementById('panelTitle');
+  const eyebrow = document.getElementById('panelEyebrow');
+  const content = document.getElementById('panelContent');
+
+  const sections = {
+    inicio: {
+      eyebrow: 'BEM-VINDO',
+      title: 'Explore nosso espaço',
+      html: `
+        <p>Explore o ambiente em 360° usando o mouse ou o toque na tela.</p>
+        <p>Arraste para olhar ao redor e use a roda do mouse para aproximar.</p>
+        <button class="panel-action" data-close-panel>
+          Voltar ao ambiente
+        </button>
+      `
+    },
+    sobre: {
+      eyebrow: 'QUEM SOMOS',
+      title: 'Arquitetura com propósito',
+      html: `
+        <p>Desenvolvemos espaços que unem estética, funcionalidade e identidade.</p>
+        <p>Nosso objetivo é transformar ideias em ambientes que valorizam a experiência de cada pessoa.</p>
+      `
+    },
+ 
+projetos: {
+  eyebrow: 'PORTFÓLIO',
+  title: 'Nossos projetos',
+  html: `
+    <p>Explore nossos projetos de arquitetura, interiores e visualização 3D.</p>
+
+    <!-- MODELO 3D INTERATIVO: aparece diretamente ao abrir o PORTFÓLIO -->
+    <div class="glb-container">
+      <model-viewer
+        id="proarquiModel"
+        class="glb-inline-viewer"
+        src="SCG%2BVacation%2BHome%2B%231%2B-%2BNatural%2BStyle%2B-%2Bver13%20(1).glb"
+        alt="SCG+ Vacation Home #1 - Natural Style"
+        camera-controls
+        auto-rotate
+        rotation-per-second="15deg"
+        shadow-intensity="1"
+        exposure="1"
+        environment-image="neutral"
+        interaction-prompt="auto"
+        loading="eager">
+      </model-viewer>
+      <div class="glb-inline-caption">
+        <strong>SCG+ VACATION HOME #1 · NATURAL STYLE</strong>
+        <span>Arraste com o mouse para girar · Scroll para zoom</span>
+      </div>
+    </div>
+
+    <!-- CARROSSEL DE IMAGENS -->
+    <div class="portfolio-carousel" aria-label="Carrossel de projetos">
+
+      <div class="portfolio-stage">
+        <img id="portfolioImage"
+             class="portfolio-main-image"
+             src="portfolio/projeto-01.jpg"
+             alt="Imagem do projeto em destaque">
+
+        <button type="button"
+          class="portfolio-arrow portfolio-prev"
+          data-carousel-prev>‹</button>
+
+        <button type="button"
+          class="portfolio-arrow portfolio-next"
+          data-carousel-next>›</button>
+      </div>
+
+      <div class="portfolio-meta">
+        <div>
+          <h3 id="portfolioTitle">Projeto de interiores</h3>
+          <p id="portfolioDescription">
+            Visualização arquitetônica e estudo de materiais.
+          </p>
+        </div>
+
+        <span id="portfolioCounter" class="portfolio-counter">
+          01 / 04
+        </span>
+      </div>
+
+      <div id="portfolioThumbnails"
+           class="portfolio-thumbnails">
+      </div>
+
+      <p class="portfolio-hint">
+        Use as setas ou selecione uma miniatura para explorar os projetos.
+      </p>
+
+    </div>
+
+    <a class="panel-action" href="mailto:proj.damasioarq@gmail.com">
+      Solicitar orçamento ↗
+    </a>
+  `
+},
+    contato: {
+      eyebrow: 'VAMOS CONVERSAR',
+      title: 'Conte sua ideia',
+      html: `
+        <p>Tem um projeto em mente? Entre em contato para conversarmos.</p>
+        <a class="panel-action" href="mailto:proj.damasioarq@gmail.com">
+          Enviar e-mail ↗
+        </a>
+        <p class="panel-note">Substitua o e-mail pelo endereço profissional do escritório.</p>
+      `
+    }
+  };
+
+  const portfolioItems = [
+    {
+      image: 'portfolio/projeto-01.jpg',
+      title: 'Projeto de interiores',
+      description: 'Visualização arquitetônica e estudo de materiais.',
+      alt: 'Render de projeto de interiores'
+    },
+    {
+      image: 'portfolio/projeto-02.jpg',
+      title: 'Arquitetura residencial',
+      description: 'Estudo de fachada, volumetria e composição arquitetônica.',
+      alt: 'Render de projeto arquitetônico residencial'
+    },
+    {
+      image: 'portfolio/projeto-03.jpg',
+      title: 'Espaço comercial',
+      description: 'Projeto pensado para valorizar a identidade do negócio.',
+      alt: 'Render de ambiente comercial'
+    },
+    {
+      image: 'portfolio/projeto-04.jpg',
+      title: 'Modelagem e renderização 3D',
+      description: 'Apresentação visual para compreender o projeto antes da execução.',
+      alt: 'Imagem de visualização 3D'
+    }
+  ];
+
+  let portfolioIndex = 0;
+
+  function setupPortfolioCarousel() {
+    const image = document.getElementById('portfolioImage');
+    const title = document.getElementById('portfolioTitle');
+    const description = document.getElementById('portfolioDescription');
+    const counter = document.getElementById('portfolioCounter');
+    const thumbnails = document.getElementById('portfolioThumbnails');
+
+    if (!image || !thumbnails) return;
+
+    thumbnails.innerHTML = portfolioItems.map(function (item, index) {
+      return `
+        <button type="button"
+                class="portfolio-thumb${index === 0 ? ' is-active' : ''}"
+                data-carousel-index="${index}"
+                aria-label="Ver ${item.title}">
+          <img src="${item.image}" alt="" loading="lazy">
+        </button>
+      `;
+    }).join('');
+
+    function showPortfolioItem(index) {
+      portfolioIndex = (index + portfolioItems.length) % portfolioItems.length;
+      const item = portfolioItems[portfolioIndex];
+
+      image.src = item.image;
+      image.alt = item.alt;
+      title.textContent = item.title;
+      description.textContent = item.description;
+      counter.textContent =
+        String(portfolioIndex + 1).padStart(2, '0') + ' / ' +
+        String(portfolioItems.length).padStart(2, '0');
+
+      thumbnails.querySelectorAll('[data-carousel-index]').forEach(function (button, i) {
+        button.classList.toggle('is-active', i === portfolioIndex);
+        button.setAttribute('aria-current', i === portfolioIndex ? 'true' : 'false');
+      });
+    }
+
+    const previous = document.querySelector('[data-carousel-prev]');
+    const next = document.querySelector('[data-carousel-next]');
+
+    if (previous) previous.onclick = function () {
+      showPortfolioItem(portfolioIndex - 1);
+    };
+    if (next) next.onclick = function () {
+      showPortfolioItem(portfolioIndex + 1);
+    };
+
+    thumbnails.onclick = function (event) {
+      const button = event.target.closest('[data-carousel-index]');
+      if (button) showPortfolioItem(Number(button.dataset.carouselIndex));
+    };
+
+    showPortfolioItem(0);
+  }
+
+  function openPanel(name) {
+    const section = sections[name];
+    if (!section) return;
+
+    eyebrow.textContent = section.eyebrow;
+    title.textContent = section.title;
+    content.innerHTML = section.html;
+    if (name === 'projetos') setupPortfolioCarousel();
+    panel.classList.toggle('portfolio-panel', name === 'projetos');
+    panel.classList.add('is-open');
+    panel.setAttribute('aria-hidden', 'false');
+  }
+
+  function closePanel() {
+    panel.classList.remove('is-open');
+    panel.setAttribute('aria-hidden', 'true');
+  }
+
+  document.querySelectorAll('[data-panel]').forEach(function (button) {
+    button.addEventListener('click', function () {
+      openPanel(button.dataset.panel);
+    });
+  });
+
+  document.getElementById('closePanel').addEventListener('click', closePanel);
+
+  panel.addEventListener('click', function (event) {
+    if (event.target.closest('[data-close-panel]')) {
+      closePanel();
+    }
+  });
+
+  var exploreButton = document.getElementById('explore360');
+  if (exploreButton) exploreButton.addEventListener('click', function () {
+    closePanel();
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen?.().catch(function () {});
+    } else {
+      document.exitFullscreen?.();
+    }
+  });
+
+  document.addEventListener('keydown', function (event) {
+    if (event.key === 'Escape') closePanel();
+  });
+})();
+</script>
 </body>
 </html>
