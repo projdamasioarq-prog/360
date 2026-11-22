@@ -37,12 +37,23 @@
   var aboutCloseElement = document.querySelector('#aboutClose');
   var menuPortfolioElement = document.querySelector('#menuPortfolio');
   var menuAboutElement = document.querySelector('#menuAbout');
+  var menuHomeElement = document.querySelector('#menuHome');
+  var quickPortfolioElement = document.querySelector('#quickPortfolio');
 
-  // Menu principal restaurado: controles do visualizador ficam ocultos.
-  if (menuPortfolioElement) menuPortfolioElement.addEventListener('click', function() {
-    switchScene(findSceneById('1-portiflio'));
-  });
+  // Navegação restaurada da visualização 360 anterior.
+  function goToPortfolio() {
+    var portfolioScene = findSceneById('1-portiflio');
+    if (portfolioScene) switchScene(portfolioScene);
+  }
+  function goToHome() {
+    var homeScene = findSceneById('0-lobby');
+    if (homeScene) switchScene(homeScene);
+    closeAboutPanel();
+  }
+  if (menuPortfolioElement) menuPortfolioElement.addEventListener('click', goToPortfolio);
+  if (quickPortfolioElement) quickPortfolioElement.addEventListener('click', goToPortfolio);
   if (menuAboutElement) menuAboutElement.addEventListener('click', openAboutPanel);
+  if (menuHomeElement) menuHomeElement.addEventListener('click', goToHome);
 
   // Ações fixas sobre a cena inicial, independentes da câmera 360°.
 
@@ -57,6 +68,7 @@
 
   var fixedInterfaceSelectors = [
     '.site-header',
+    '.quick-actions',
     '#titleBar',
     '#sceneList',
     '#sceneListToggle',
