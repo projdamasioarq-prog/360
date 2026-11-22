@@ -1,566 +1,64 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-BR">
 <head>
-<title>Project Title</title>
-<meta charset="utf-8">
-<meta name="viewport" content="target-densitydpi=device-dpi, width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, minimal-ui" />
-<style> /* VISUALIZADOR 3D */
-.glb-container {
-  margin: 22px 0;
-  background: #101512;
-  border: 1px solid rgba(220,230,220,.18);
-  border-radius: 14px;
-  overflow: hidden;
-}
-
-.glb-viewer {
-  display: block;
-  width: 100%;
-  height: 430px;
-  background: #151b17;
-}
-
-.glb-caption {
-  padding: 14px;
-  color: #fff;
-  font-size: 12px;
-  letter-spacing: .08em;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.glb-fullscreen {
-  background: #315743;
-  color: white;
-  border: none;
-  padding: 9px 14px;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-.glb-error {
-  color: #ffb5a8;
-  font-size: 13px;
-  padding: 10px 14px;
-}@-ms-viewport { width: device-width; } </style>
-<link rel="stylesheet" href="vendor/reset.min.css">
-<link rel="stylesheet" href="style.css">
-<script type="module"
-src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.3.0/model-viewer.min.js">
-</script>
-  
-<style>
-/* CARROSSEL DO PORTFÓLIO */
-.portfolio-carousel {
-  margin-top: 22px;
-  color: #f4f1eb;
-}
-.portfolio-stage {
-  position: relative;
-  background: #111614;
-  border: 1px solid rgba(220, 230, 220, .18);
-  border-radius: 14px;
-  overflow: hidden;
-}
-.portfolio-main-image {
-  display: block;
-  width: 100%;
-  height: clamp(220px, 42vh, 440px);
-  object-fit: contain;
-  background: #0b0d0c;
-}
-.portfolio-arrow {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  z-index: 2;
-  width: 42px;
-  height: 42px;
-  border: 1px solid rgba(255,255,255,.35);
-  border-radius: 50%;
-  background: rgba(15, 22, 18, .82);
-  color: #fff;
-  font-size: 24px;
-  cursor: pointer;
-}
-.portfolio-arrow:hover { background: #315743; }
-.portfolio-prev { left: 12px; }
-.portfolio-next { right: 12px; }
-.portfolio-meta {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 16px;
-  margin: 15px 0 12px;
-}
-.portfolio-meta h3 {
-  margin: 0 0 6px;
-  color: #fff;
-  font-size: 19px;
-  font-weight: 600;
-}
-.portfolio-meta p {
-  margin: 0;
-  color: rgba(255,255,255,.72);
-  line-height: 1.55;
-  font-size: 14px;
-}
-.portfolio-counter {
-  flex: 0 0 auto;
-  color: #b9cbbd;
-  font-size: 12px;
-  letter-spacing: .08em;
-  padding-top: 4px;
-}
-.portfolio-thumbnails {
-  display: flex;
-  gap: 9px;
-  overflow-x: auto;
-  padding: 3px 1px 10px;
-}
-.portfolio-thumb {
-  flex: 0 0 82px;
-  height: 58px;
-  padding: 0;
-  border: 2px solid transparent;
-  border-radius: 6px;
-  background: #171b18;
-  overflow: hidden;
-  cursor: pointer;
-  opacity: .68;
-}
-.portfolio-thumb img {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-.portfolio-thumb.is-active {
-  border-color: #9ab7a2;
-  opacity: 1;
-}
-.portfolio-hint {
-  margin-top: 8px;
-  font-size: 12px;
-  color: rgba(255,255,255,.52);
-}
-@media (max-width: 600px) {
-  .portfolio-main-image { height: 34vh; min-height: 200px; }
-  .portfolio-arrow { width: 36px; height: 36px; }
-  .portfolio-thumb { flex-basis: 70px; height: 50px; }
-  .portfolio-meta h3 { font-size: 17px; }
-}
-</style>
-
-
-<style>
-/* CARTÃO DO PROJETO 3D E VISUALIZADOR EM MODAL */
-.glb-project-card{display:flex;align-items:center;gap:20px;width:100%;margin:22px 0 28px;padding:16px;text-align:left;color:#f4f1eb;background:linear-gradient(115deg,#17221b,#0d110f);border:1px solid rgba(220,230,220,.24);border-radius:12px;cursor:pointer;transition:border-color .2s,transform .2s}
-.glb-project-card:hover{border-color:#9ab7a2;transform:translateY(-2px)}
-.glb-card-visual{position:relative;display:grid;flex:0 0 116px;height:92px;place-items:center;overflow:hidden;border-radius:8px;background:radial-gradient(ellipse at center,#385342 0%,#18251d 62%,#101512 100%)}
-.glb-card-orbit{position:absolute;width:78px;height:34px;border:1px solid #b7cbbb;border-radius:50%;transform:rotate(-28deg)}
-.glb-card-cube{color:#fff;font-size:28px;font-weight:700;letter-spacing:.08em;text-shadow:0 2px 14px #000}
-.glb-card-copy{display:flex;flex-direction:column;gap:6px}
-.glb-card-copy strong{font-size:16px}
-.glb-card-copy>span:nth-child(2){color:rgba(255,255,255,.66);font-size:13px}
-.glb-card-copy .glb-card-cta{margin-top:5px;color:#b9cbbd;font-size:11px;letter-spacing:.12em}
-.glb-modal{position:fixed;inset:0;z-index:10000;display:none;align-items:center;justify-content:center;padding:24px;background:rgba(4,8,6,.94)}
-.glb-modal.is-open{display:flex}
-.glb-modal-dialog{position:relative;display:flex;flex-direction:column;width:min(1200px,100%);height:min(820px,92vh);overflow:hidden;background:#101512;border:1px solid rgba(220,230,220,.2);border-radius:14px;box-shadow:0 24px 90px rgba(0,0,0,.55)}
-.glb-modal-header{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:16px 20px;color:#fff}
-.glb-modal-header strong{font-size:14px;letter-spacing:.04em}
-.glb-modal-header span{display:block;margin-top:4px;color:rgba(255,255,255,.58);font-size:11px}
-.glb-modal-close{width:38px;height:38px;flex:0 0 auto;border:1px solid rgba(255,255,255,.25);border-radius:50%;background:transparent;color:#fff;font-size:25px;cursor:pointer}
-.glb-modal-viewer{display:block;flex:1;width:100%;min-height:0;background:radial-gradient(ellipse at center,#26372c,#0d110f 75%);--poster-color:transparent}
-.glb-modal-help{padding:12px 18px;color:rgba(255,255,255,.64);text-align:center;font-size:12px}
-@media(max-width:600px){.glb-project-card{gap:12px;padding:12px}.glb-card-visual{flex-basis:82px;height:78px}.glb-card-copy strong{font-size:14px}.glb-modal{padding:8px}.glb-modal-dialog{height:94vh;border-radius:10px}.glb-modal-header{padding:12px}}
-
-
-/* Visualizador 3D diretamente dentro do painel de portfólio */
-.glb-container{margin:18px 0 26px;background:#101512;border:1px solid rgba(220,230,220,.18);border-radius:12px;overflow:hidden}
-.glb-inline-viewer{display:block;width:100%;height:clamp(300px,55vh,560px);background:radial-gradient(ellipse at center,#344638,#101512 78%);--poster-color:transparent}
-.glb-inline-caption{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px;padding:12px 15px;color:#fff;font:11px Arial,sans-serif;letter-spacing:.04em}
-.glb-inline-caption span{color:rgba(255,255,255,.62)}
-.site-panel.portfolio-panel{width:min(780px,92%);max-height:90vh}
-@media(max-width:600px){.glb-inline-viewer{height:42vh;min-height:260px}.site-panel.portfolio-panel{width:94%;max-height:88vh;padding:25px 16px}}
-
-
-</style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ProArqui 3D</title>
+  <style>
+    * { box-sizing: border-box; }
+    html, body { width: 100%; min-height: 100%; margin: 0; }
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 28px 20px;
+      background: #fff;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+    .menu {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: clamp(18px, 3vw, 42px);
+      width: 100%;
+    }
+    .menu button {
+      position: relative;
+      padding: 12px 0;
+      border: 0;
+      background: transparent;
+      color: #333;
+      font: 600 10px Arial, Helvetica, sans-serif;
+      letter-spacing: 1.7px;
+      text-transform: uppercase;
+      cursor: pointer;
+    }
+    .menu button::after {
+      content: "";
+      position: absolute;
+      right: 100%;
+      bottom: 5px;
+      left: 0;
+      height: 1px;
+      background: #858585;
+      transition: right .25s ease;
+    }
+    .menu button:hover::after { right: 0; }
+    @media (max-width: 480px) {
+      body { padding: 22px 14px; }
+      .menu { gap: 12px 22px; }
+      .menu button { font-size: 9px; letter-spacing: 1px; }
+    }
+  </style>
 </head>
-<body class="single-scene ">
-<div id="brandIntro" class="brand-intro" aria-label="PROARQUI">
-  <img src="assets/proarqui-logo.svg" alt="PROARQUI">
-</div>
-
-<div id="pano"></div>
-<!-- MENU DO ESCRITÓRIO -->
-<header class="site-header">
-  <a class="brand" href="#" onclick="return false;" aria-label="PROARQUI - início">
-    <img src="assets/proarqui-logo.svg" alt="PROARQUI" class="brand-logo">
-  </a>
-
-  <nav class="main-menu">
-    <button data-panel="inicio">Início</button>
-    <button data-panel="sobre">Sobre nós</button>
-    <button data-panel="projetos">Projetos</button>
-    <button data-panel="contato">Contato</button>
+<body>
+  <nav class="menu" aria-label="Menu principal">
+    <button type="button">Início</button>
+    <button type="button">Sobre nós</button>
+    <button type="button">Projetos</button>
+    <button type="button">Contato</button>
   </nav>
-
-  <button id="explore360" class="explore-button">
-    Explorar 360° ↗
-  </button>
-</header>
-
-<!-- TEXTO DE APRESENTAÇÃO -->
-<div class="welcome-card">
-  <span class="eyebrow">ARQUITETURA IMERSIVA</span>
-  <h2>Explore o espaço.<br>Imagine possibilidades.</h2>
-  <p>Conheça nosso universo arquitetônico em uma experiência interativa.</p>
-  <button data-panel="sobre" class="light-button">
-    Conheça o escritório →
-  </button>
-  <span class="drag-hint">↔ Arraste a imagem para explorar</span>
-</div>
-
-<!-- BOTÕES FLUTUANTES -->
-<div class="quick-actions">
-  <button data-panel="projetos" aria-label="Ver projetos">
-    <span>▦</span> Projetos
-  </button>
-  <button data-panel="contato" aria-label="Entrar em contato">
-    <span>↗</span> Contato
-  </button>
-</div>
-
-<!-- PAINEL INTERATIVO -->
-<div id="sitePanel" class="site-panel" aria-hidden="true">
-  <button id="closePanel" class="close-panel" aria-label="Fechar">×</button>
-  <span id="panelEyebrow" class="eyebrow">DAMASIO ARQUITETURA</span>
-  <h2 id="panelTitle">Bem-vindo</h2>
-  <div id="panelContent"></div>
-</div>
-
-<!-- RODAPÉ -->
-<div class="site-footer">
-  <span>© DAMASIO ARQUITETURA</span>
-  <span>EXPERIÊNCIA 360°</span>
-</div>
-  
-<div id="sceneList">
-  <ul class="scenes">
-    
-      <a href="javascript:void(0)" class="scene" data-id="0-06">
-        <li class="text">06</li>
-      </a>
-    
-  </ul>
-</div>
-
-<div id="titleBar">
-  <h1 class="sceneName"></h1>
-</div>
-
-<a href="javascript:void(0)" id="autorotateToggle">
-  <img class="icon off" src="img/play.png">
-  <img class="icon on" src="img/pause.png">
-</a>
-
-<a href="javascript:void(0)" id="fullscreenToggle">
-  <img class="icon off" src="img/fullscreen.png">
-  <img class="icon on" src="img/windowed.png">
-</a>
-
-<a href="javascript:void(0)" id="sceneListToggle">
-  <img class="icon off" src="img/expand.png">
-  <img class="icon on" src="img/collapse.png">
-</a>
-
-<a href="javascript:void(0)" id="viewUp" class="viewControlButton viewControlButton-1">
-  <img class="icon" src="img/up.png">
-</a>
-<a href="javascript:void(0)" id="viewDown" class="viewControlButton viewControlButton-2">
-  <img class="icon" src="img/down.png">
-</a>
-<a href="javascript:void(0)" id="viewLeft" class="viewControlButton viewControlButton-3">
-  <img class="icon" src="img/left.png">
-</a>
-<a href="javascript:void(0)" id="viewRight" class="viewControlButton viewControlButton-4">
-  <img class="icon" src="img/right.png">
-</a>
-<a href="javascript:void(0)" id="viewIn" class="viewControlButton viewControlButton-5">
-  <img class="icon" src="img/plus.png">
-</a>
-<a href="javascript:void(0)" id="viewOut" class="viewControlButton viewControlButton-6">
-  <img class="icon" src="img/minus.png">
-</a>
-
-<script src="vendor/screenfull.min.js" ></script>
-<script src="vendor/bowser.min.js" ></script>
-<script src="vendor/marzipano.js" ></script>
-
-<script src="data.js"></script>
-<script src="index.js"></script>
-<script>
-(function () {
-  const panel = document.getElementById('sitePanel');
-  const title = document.getElementById('panelTitle');
-  const eyebrow = document.getElementById('panelEyebrow');
-  const content = document.getElementById('panelContent');
-
-  const sections = {
-    inicio: {
-      eyebrow: 'BEM-VINDO',
-      title: 'Explore nosso espaço',
-      html: `
-        <p>Explore o ambiente em 360° usando o mouse ou o toque na tela.</p>
-        <p>Arraste para olhar ao redor e use a roda do mouse para aproximar.</p>
-        <button class="panel-action" data-close-panel>
-          Voltar ao ambiente
-        </button>
-      `
-    },
-    sobre: {
-      eyebrow: 'QUEM SOMOS',
-      title: 'Arquitetura com propósito',
-      html: `
-        <p>Desenvolvemos espaços que unem estética, funcionalidade e identidade.</p>
-        <p>Nosso objetivo é transformar ideias em ambientes que valorizam a experiência de cada pessoa.</p>
-      `
-    },
- 
-projetos: {
-  eyebrow: 'PORTFÓLIO',
-  title: 'Nossos projetos',
-  html: `
-    <p>Explore nossos projetos de arquitetura, interiores e visualização 3D.</p>
-
-    <!-- MODELO 3D INTERATIVO: aparece diretamente ao abrir o PORTFÓLIO -->
-    <div class="glb-container">
-      <model-viewer
-        id="proarquiModel"
-        class="glb-inline-viewer"
-        src="SCG%2BVacation%2BHome%2B%231%2B-%2BNatural%2BStyle%2B-%2Bver13%20(1).glb"
-        alt="SCG+ Vacation Home #1 - Natural Style"
-        camera-controls
-        auto-rotate
-        rotation-per-second="15deg"
-        shadow-intensity="1"
-        exposure="1"
-        environment-image="neutral"
-        interaction-prompt="auto"
-        loading="eager">
-      </model-viewer>
-      <div class="glb-inline-caption">
-        <strong>SCG+ VACATION HOME #1 · NATURAL STYLE</strong>
-        <span>Arraste com o mouse para girar · Scroll para zoom</span>
-      </div>
-    </div>
-
-    <!-- CARROSSEL DE IMAGENS -->
-    <div class="portfolio-carousel" aria-label="Carrossel de projetos">
-
-      <div class="portfolio-stage">
-        <img id="portfolioImage"
-             class="portfolio-main-image"
-             src="portfolio/projeto-01.jpg"
-             alt="Imagem do projeto em destaque">
-
-        <button type="button"
-          class="portfolio-arrow portfolio-prev"
-          data-carousel-prev>‹</button>
-
-        <button type="button"
-          class="portfolio-arrow portfolio-next"
-          data-carousel-next>›</button>
-      </div>
-
-      <div class="portfolio-meta">
-        <div>
-          <h3 id="portfolioTitle">Projeto de interiores</h3>
-          <p id="portfolioDescription">
-            Visualização arquitetônica e estudo de materiais.
-          </p>
-        </div>
-
-        <span id="portfolioCounter" class="portfolio-counter">
-          01 / 04
-        </span>
-      </div>
-
-      <div id="portfolioThumbnails"
-           class="portfolio-thumbnails">
-      </div>
-
-      <p class="portfolio-hint">
-        Use as setas ou selecione uma miniatura para explorar os projetos.
-      </p>
-
-    </div>
-
-    <a class="panel-action" href="mailto:proj.damasioarq@gmail.com">
-      Solicitar orçamento ↗
-    </a>
-  `
-},
-    contato: {
-      eyebrow: 'VAMOS CONVERSAR',
-      title: 'Conte sua ideia',
-      html: `
-        <p>Tem um projeto em mente? Entre em contato para conversarmos.</p>
-        <a class="panel-action" href="mailto:proj.damasioarq@gmail.com">
-          Enviar e-mail ↗
-        </a>
-        <p class="panel-note">Substitua o e-mail pelo endereço profissional do escritório.</p>
-      `
-    }
-  };
-
-  const portfolioItems = [
-    {
-      image: 'portfolio/projeto-01.jpg',
-      title: 'Projeto de interiores',
-      description: 'Visualização arquitetônica e estudo de materiais.',
-      alt: 'Render de projeto de interiores'
-    },
-    {
-      image: 'portfolio/projeto-02.jpg',
-      title: 'Arquitetura residencial',
-      description: 'Estudo de fachada, volumetria e composição arquitetônica.',
-      alt: 'Render de projeto arquitetônico residencial'
-    },
-    {
-      image: 'portfolio/projeto-03.jpg',
-      title: 'Espaço comercial',
-      description: 'Projeto pensado para valorizar a identidade do negócio.',
-      alt: 'Render de ambiente comercial'
-    },
-    {
-      image: 'portfolio/projeto-04.jpg',
-      title: 'Modelagem e renderização 3D',
-      description: 'Apresentação visual para compreender o projeto antes da execução.',
-      alt: 'Imagem de visualização 3D'
-    }
-  ];
-
-  let portfolioIndex = 0;
-
-  function setupPortfolioCarousel() {
-    const image = document.getElementById('portfolioImage');
-    const title = document.getElementById('portfolioTitle');
-    const description = document.getElementById('portfolioDescription');
-    const counter = document.getElementById('portfolioCounter');
-    const thumbnails = document.getElementById('portfolioThumbnails');
-
-    if (!image || !thumbnails) return;
-
-    thumbnails.innerHTML = portfolioItems.map(function (item, index) {
-      return `
-        <button type="button"
-                class="portfolio-thumb${index === 0 ? ' is-active' : ''}"
-                data-carousel-index="${index}"
-                aria-label="Ver ${item.title}">
-          <img src="${item.image}" alt="" loading="lazy">
-        </button>
-      `;
-    }).join('');
-
-    function showPortfolioItem(index) {
-      portfolioIndex = (index + portfolioItems.length) % portfolioItems.length;
-      const item = portfolioItems[portfolioIndex];
-
-      image.src = item.image;
-      image.alt = item.alt;
-      title.textContent = item.title;
-      description.textContent = item.description;
-      counter.textContent =
-        String(portfolioIndex + 1).padStart(2, '0') + ' / ' +
-        String(portfolioItems.length).padStart(2, '0');
-
-      thumbnails.querySelectorAll('[data-carousel-index]').forEach(function (button, i) {
-        button.classList.toggle('is-active', i === portfolioIndex);
-        button.setAttribute('aria-current', i === portfolioIndex ? 'true' : 'false');
-      });
-    }
-
-    const previous = document.querySelector('[data-carousel-prev]');
-    const next = document.querySelector('[data-carousel-next]');
-
-    if (previous) previous.onclick = function () {
-      showPortfolioItem(portfolioIndex - 1);
-    };
-    if (next) next.onclick = function () {
-      showPortfolioItem(portfolioIndex + 1);
-    };
-
-    thumbnails.onclick = function (event) {
-      const button = event.target.closest('[data-carousel-index]');
-      if (button) showPortfolioItem(Number(button.dataset.carouselIndex));
-    };
-
-    showPortfolioItem(0);
-  }
-
-  function openPanel(name) {
-    const section = sections[name];
-    if (!section) return;
-
-    eyebrow.textContent = section.eyebrow;
-    title.textContent = section.title;
-    content.innerHTML = section.html;
-    if (name === 'projetos') setupPortfolioCarousel();
-    panel.classList.toggle('portfolio-panel', name === 'projetos');
-    panel.classList.add('is-open');
-    panel.setAttribute('aria-hidden', 'false');
-  }
-
-  function closePanel() {
-    panel.classList.remove('is-open');
-    panel.setAttribute('aria-hidden', 'true');
-  }
-
-  document.querySelectorAll('[data-panel]').forEach(function (button) {
-    button.addEventListener('click', function () {
-      openPanel(button.dataset.panel);
-    });
-  });
-
-  document.getElementById('closePanel').addEventListener('click', closePanel);
-
-  panel.addEventListener('click', function (event) {
-    if (event.target.closest('[data-close-panel]')) {
-      closePanel();
-    }
-  });
-
-  document.getElementById('explore360').addEventListener('click', function () {
-    closePanel();
-
-    if (!document.fullscreenElement) {
-      document.documentElement.requestFullscreen?.().catch(function () {});
-    } else {
-      document.exitFullscreen?.();
-    }
-  });
-
-  document.addEventListener('keydown', function (event) {
-    if (event.key === 'Escape') closePanel();
-  });
-})();
-</script>
-  
-
-
-
-<script>
-(function(){
-  var intro=document.getElementById('brandIntro');
-  if(!intro) return;
-  window.setTimeout(function(){
-    intro.classList.add('brand-intro--hide');
-    window.setTimeout(function(){ intro.remove(); }, 1600);
-  }, 6200);
-})();
-</script>
 </body>
 </html>
