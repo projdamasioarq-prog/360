@@ -21,7 +21,7 @@
   var screenfull = window.screenfull;
   var data = window.APP_DATA;
 
-  // Grab elements from DOM.
+  // Elementos originais do visualizador Marzipano.
   var panoElement = document.querySelector('#pano');
   var sceneNameElement = document.querySelector('#titleBar .sceneName');
   var sceneListElement = document.querySelector('#sceneList');
@@ -29,84 +29,8 @@
   var sceneListToggleElement = document.querySelector('#sceneListToggle');
   var autorotateToggleElement = document.querySelector('#autorotateToggle');
   var fullscreenToggleElement = document.querySelector('#fullscreenToggle');
-  var portfolioActionsElement = document.querySelector('#portfolioActions');
-  var portfolioPairs = portfolioActionsElement ? portfolioActionsElement.querySelectorAll('.portfolio-pair') : [];
-  var lobbyActionsElement = document.querySelector('#lobbyActions');
-  var aboutActionElement = document.querySelector('#aboutAction');
-  var aboutPanelElement = document.querySelector('#aboutPanel');
-  var aboutCloseElement = document.querySelector('#aboutClose');
-  var menuPortfolioElement = document.querySelector('#menuPortfolio');
-  var menuAboutElement = document.querySelector('#menuAbout');
-  var menuHomeElement = document.querySelector('#menuHome');
-  var quickPortfolioElement = document.querySelector('#quickPortfolio');
 
-  // Navegação restaurada da visualização 360 anterior.
-  function goToPortfolio() {
-    var portfolioScene = findSceneById('1-portiflio');
-    if (portfolioScene) switchScene(portfolioScene);
-  }
-  function goToHome() {
-    var homeScene = findSceneById('0-lobby');
-    if (homeScene) switchScene(homeScene);
-    closeAboutPanel();
-  }
-  if (menuPortfolioElement) menuPortfolioElement.addEventListener('click', goToPortfolio);
-  if (quickPortfolioElement) quickPortfolioElement.addEventListener('click', goToPortfolio);
-  if (menuAboutElement) menuAboutElement.addEventListener('click', openAboutPanel);
-  if (menuHomeElement) menuHomeElement.addEventListener('click', goToHome);
-
-  // Ações fixas sobre a cena inicial, independentes da câmera 360°.
-
-  // Toda a interface HTML fica numa camada fixa no viewport.
-  // O Marzipano permanece isolado em #pano; nenhum controle de tela é filho dele.
-  var screenOverlay = document.getElementById('screenOverlay');
-  if (!screenOverlay) {
-    screenOverlay = document.createElement('div');
-    screenOverlay.id = 'screenOverlay';
-  }
-  document.documentElement.appendChild(screenOverlay);
-
-  var fixedInterfaceSelectors = [
-    '.site-header',
-    '.quick-actions',
-    '#titleBar',
-    '#sceneList',
-    '#sceneListToggle',
-    '#autorotateToggle',
-    '#fullscreenToggle',
-    '.bottom-note',
-    '#viewUp',
-    '#viewDown',
-    '#viewLeft',
-    '#viewRight',
-    '#viewIn',
-    '#viewOut',
-    '#portfolioActions',
-    '#lobbyActions',
-  ];
-  fixedInterfaceSelectors.forEach(function(selector) {
-    var element = document.querySelector(selector);
-    if (element) screenOverlay.appendChild(element);
-  });
-
-  // Mesmo mecanismo do site de referência: o HUD é filho da camada
-  // screenOverlay, que fica fora do body e do elemento #pano do Marzipano.
-  if (lobbyActionsElement) screenOverlay.appendChild(lobbyActionsElement);
-  if (aboutPanelElement) screenOverlay.appendChild(aboutPanelElement);
-
-  // Ações do Lobby: os botões ficam na camada fixa, fora do panorama.
-  if (aboutActionElement && aboutPanelElement && aboutCloseElement) {
-    aboutActionElement.addEventListener('click', openAboutPanel);
-    aboutCloseElement.addEventListener('click', closeAboutPanel);
-    aboutPanelElement.addEventListener('click', function(event) {
-      if (event.target === aboutPanelElement) closeAboutPanel();
-    });
-    document.addEventListener('keydown', function(event) {
-      if (event.key === 'Escape') closeAboutPanel();
-    });
-  }
-
-  // Detect desktop or mobile mode.
+  // Detect desktop or mobile mode.  // Detect desktop or mobile mode.
   if (window.matchMedia) {
     var setMode = function() {
       if (mql.matches) {
@@ -146,92 +70,20 @@
   // Initialize viewer.
   var viewer = new Marzipano.Viewer(panoElement, viewerOpts);
 
-  // Create scenes.
+  // Create scenes sem os botões e hotspots personalizados.
   var scenes = data.scenes.map(function(data) {
     var urlPrefix = "https://projdamasioarq-prog.github.io/ProArqui-3D/tiles";
     var source = Marzipano.ImageUrlSource.fromString(
       urlPrefix + "/" + data.id + "/{z}/{f}/{y}/{x}.jpg",
       { cubeMapPreviewUrl: urlPrefix + "/" + data.id + "/preview.jpg" });
     var geometry = new Marzipano.CubeGeometry(data.levels);
-
     var limiter = Marzipano.RectilinearView.limit.traditional(data.faceSize, 100*Math.PI/180, 120*Math.PI/180);
     var view = new Marzipano.RectilinearView(data.initialViewParameters, limiter);
-
-    var scene = viewer.createScene({
-      source: source,
-      geometry: geometry,
-      view: view,
-      pinFirstLevel: true
-    });
-
-    // Os marcadores são desenhados na camada fixa usando a posição que
-    // ocupam na tela no enquadramento inicial da cena.
-    var fixedHotspots = [];
-    data.linkHotspots.forEach(function(hotspot) {
-      var element = createLinkHotspotElement(hotspot);
-      element.classList.add('fixed-scene-hotspot');
-      element.setAttribute('data-scene-id', data.id);
-      screenOverlay.appendChild(element);
-      fixedHotspots.push({ element: element, coordinates: { yaw: hotspot.yaw, pitch: hotspot.pitch } });
-    });
-
-    data.infoHotspots.forEach(function(hotspot) {
-      var element = createInfoHotspotElement(hotspot);
-      element.classList.add('fixed-scene-hotspot');
-      element.setAttribute('data-scene-id', data.id);
-      screenOverlay.appendChild(element);
-      fixedHotspots.push({ element: element, coordinates: { yaw: hotspot.yaw, pitch: hotspot.pitch } });
-    });
-
-    return {
-      data: data,
-      scene: scene,
-      view: view,
-      fixedHotspots: fixedHotspots
-    };
+    var scene = viewer.createScene({ source: source, geometry: geometry, view: view, pinFirstLevel: true });
+    return { data: data, scene: scene, view: view };
   });
 
-  // Cada marcador mantém sua própria posição na tela, calculada a partir
-  // do enquadramento inicial da cena. Apenas os marcadores da cena ativa
-  // aparecem; os demais ficam ocultos até a respectiva cena ser aberta.
-  function positionFixedHotspots(activeScene) {
-    if (viewer.updateSize) viewer.updateSize();
-    scenes.forEach(function(sceneItem) {
-      var isActive = !activeScene || sceneItem === activeScene;
-      sceneItem.fixedHotspots.forEach(function(item) {
-        if (!isActive) {
-          item.element.style.display = 'none';
-          return;
-        }
-      });
-      if (!isActive) return;
-
-      var currentParameters = sceneItem.view.parameters();
-      sceneItem.view.setParameters(sceneItem.data.initialViewParameters);
-      sceneItem.fixedHotspots.forEach(function(item) {
-        var point = sceneItem.view.coordinatesToScreen(item.coordinates);
-        if (point && isFinite(point.x) && isFinite(point.y)) {
-          item.element.style.left = point.x + 'px';
-          item.element.style.top = point.y + 'px';
-          item.element.style.display = 'block';
-        } else {
-          item.element.style.display = 'none';
-        }
-      });
-      sceneItem.view.setParameters(currentParameters);
-    });
-  }
-
-  window.addEventListener('resize', function() {
-    window.requestAnimationFrame(function() {
-      var active = scenes.filter(function(item) {
-        return item.data.id === currentSceneId;
-      })[0];
-      positionFixedHotspots(active);
-    });
-  });
-
-  // Set up autorotate, if enabled.
+  // Set up autorotate, if enabled.  // Set up autorotate, if enabled.
   var autorotate = Marzipano.autorotate({
     yawSpeed: 0.03,
     targetPitch: 0,
@@ -306,58 +158,16 @@
     return s.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;');
   }
 
-  function openAboutPanel() {
-    if (!aboutPanelElement) return;
-    aboutPanelElement.classList.add('is-open');
-    aboutPanelElement.setAttribute('aria-hidden', 'false');
-    if (aboutCloseElement) aboutCloseElement.focus();
-  }
-
-  function closeAboutPanel() {
-    if (!aboutPanelElement) return;
-    aboutPanelElement.classList.remove('is-open');
-    aboutPanelElement.setAttribute('aria-hidden', 'true');
-  }
-
-  var currentSceneId = null;
-
   function switchScene(scene) {
-    currentSceneId = scene.data.id;
     stopAutorotate();
     scene.view.setParameters(scene.data.initialViewParameters);
     scene.scene.switchTo();
-    window.requestAnimationFrame(function() {
-      positionFixedHotspots(scene);
-    });
     startAutorotate();
     updateSceneName(scene);
     updateSceneList(scene);
-    var isLobby = scene.data.id === '0-lobby';
-    var isPortfolio = scene.data.id === '1-portiflio';
-    if (lobbyActionsElement) {
-      lobbyActionsElement.classList.toggle('is-visible', isLobby);
-      lobbyActionsElement.style.display = isLobby ? 'block' : 'none';
-      lobbyActionsElement.setAttribute('aria-hidden', isLobby ? 'false' : 'true');
-    }
-    if (!isLobby) closeAboutPanel();
-    var fixedHotspots = screenOverlay.querySelectorAll('.fixed-scene-hotspot');
-    for (var h = 0; h < fixedHotspots.length; h++) {
-      fixedHotspots[h].classList.toggle(
-        'is-current',
-        fixedHotspots[h].getAttribute('data-scene-id') === scene.data.id
-      );
-    }
-    if (portfolioActionsElement) {
-      portfolioActionsElement.classList.toggle('is-visible', isPortfolio);
-      portfolioActionsElement.style.display = isPortfolio ? 'block' : 'none';
-      // Mantém o primeiro par na posição inicial, sem acompanhar o yaw da câmera.
-      for (var i = 0; i < portfolioPairs.length; i++) {
-        portfolioPairs[i].classList.add('is-active');
-      }
-    }
   }
 
-  function updateSceneName(scene) {
+  function updateSceneName(scene) {  function updateSceneName(scene) {
     sceneNameElement.innerHTML = sanitize(scene.data.name);
   }
 
@@ -410,149 +220,7 @@
     }
   }
 
-  function createLinkHotspotElement(hotspot) {
-
-    // Create wrapper element to hold icon and tooltip.
-    var wrapper = document.createElement('div');
-    wrapper.classList.add('hotspot');
-    wrapper.classList.add('link-hotspot');
-
-    // Create image element.
-    var icon = document.createElement('img');
-    icon.src = 'img/link.png';
-    icon.classList.add('link-hotspot-icon');
-
-    // Set rotation transform.
-    var transformProperties = [ '-ms-transform', '-webkit-transform', 'transform' ];
-    for (var i = 0; i < transformProperties.length; i++) {
-      var property = transformProperties[i];
-      icon.style[property] = 'rotate(' + hotspot.rotation + 'rad)';
-    }
-
-    // Add click event handler.
-    wrapper.addEventListener('click', function() {
-      switchScene(findSceneById(hotspot.target));
-    });
-
-    // Prevent touch and scroll events from reaching the parent element.
-    // This prevents the view control logic from interfering with the hotspot.
-    stopTouchAndScrollEventPropagation(wrapper);
-
-    // Create tooltip element.
-    var tooltip = document.createElement('div');
-    tooltip.classList.add('hotspot-tooltip');
-    tooltip.classList.add('link-hotspot-tooltip');
-    tooltip.innerHTML = findSceneDataById(hotspot.target).name;
-
-    wrapper.appendChild(icon);
-    wrapper.appendChild(tooltip);
-
-    return wrapper;
-  }
-
-  function createInfoHotspotElement(hotspot) {
-
-    // Create wrapper element to hold icon and tooltip.
-    var wrapper = document.createElement('div');
-    wrapper.classList.add('hotspot');
-    wrapper.classList.add('info-hotspot');
-
-    // Create hotspot/tooltip header.
-    var header = document.createElement('div');
-    header.classList.add('info-hotspot-header');
-
-    // Create image element.
-    var iconWrapper = document.createElement('div');
-    iconWrapper.classList.add('info-hotspot-icon-wrapper');
-    var icon = document.createElement('img');
-    icon.src = 'img/info.png';
-    icon.classList.add('info-hotspot-icon');
-    iconWrapper.appendChild(icon);
-
-    // Create title element.
-    var titleWrapper = document.createElement('div');
-    titleWrapper.classList.add('info-hotspot-title-wrapper');
-    var title = document.createElement('div');
-    title.classList.add('info-hotspot-title');
-    title.innerHTML = hotspot.title;
-    titleWrapper.appendChild(title);
-
-    // Create close element.
-    var closeWrapper = document.createElement('div');
-    closeWrapper.classList.add('info-hotspot-close-wrapper');
-    var closeIcon = document.createElement('img');
-    closeIcon.src = 'img/close.png';
-    closeIcon.classList.add('info-hotspot-close-icon');
-    closeWrapper.appendChild(closeIcon);
-
-    // Construct header element.
-    header.appendChild(iconWrapper);
-    header.appendChild(titleWrapper);
-    header.appendChild(closeWrapper);
-
-    // Create text element.
-    var text = document.createElement('div');
-    text.classList.add('info-hotspot-text');
-    text.innerHTML = hotspot.text;
-
-    // Place header and text into wrapper element.
-    wrapper.appendChild(header);
-    wrapper.appendChild(text);
-
-    // Create a modal for the hotspot content to appear on mobile mode.
-    var modal = document.createElement('div');
-    modal.innerHTML = wrapper.innerHTML;
-    modal.classList.add('info-hotspot-modal');
-    document.body.appendChild(modal);
-
-    var toggle = function() {
-      wrapper.classList.toggle('visible');
-      modal.classList.toggle('visible');
-    };
-
-    // Show content when hotspot is clicked.
-    wrapper.querySelector('.info-hotspot-header').addEventListener('click', toggle);
-
-    // Hide content when close icon is clicked.
-    modal.querySelector('.info-hotspot-close-wrapper').addEventListener('click', toggle);
-
-    // Prevent touch and scroll events from reaching the parent element.
-    // This prevents the view control logic from interfering with the hotspot.
-    stopTouchAndScrollEventPropagation(wrapper);
-
-    return wrapper;
-  }
-
-  // Prevent touch and scroll events from reaching the parent element.
-  function stopTouchAndScrollEventPropagation(element, eventList) {
-    var eventList = [ 'touchstart', 'touchmove', 'touchend', 'touchcancel',
-                      'wheel', 'mousewheel' ];
-    for (var i = 0; i < eventList.length; i++) {
-      element.addEventListener(eventList[i], function(event) {
-        event.stopPropagation();
-      });
-    }
-  }
-
-  function findSceneById(id) {
-    for (var i = 0; i < scenes.length; i++) {
-      if (scenes[i].data.id === id) {
-        return scenes[i];
-      }
-    }
-    return null;
-  }
-
-  function findSceneDataById(id) {
-    for (var i = 0; i < data.scenes.length; i++) {
-      if (data.scenes[i].id === id) {
-        return data.scenes[i];
-      }
-    }
-    return null;
-  }
-
-  // Display the initial scene.
+  // Display the initial scene.  // Display the initial scene.
   switchScene(scenes[0]);
 
 })();
